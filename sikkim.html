@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Explore Sikkim - MountRush</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    *{margin:0;padding:0;box-sizing:border-box;font-family:'Poppins',sans-serif;}
+    body{background:#0c0c0c;color:#fff;overflow-x:hidden;}
+
+    /* ---------- HERO ---------- */
+    header{
+      position:relative;
+      height:100vh;
+      display:flex;
+      justify-content:center;
+      align-items:center;
+      text-align:center;
+      background:url('https://upload.wikimedia.org/wikipedia/commons/7/70/Tsomgo_Lake%2C_Sikkim.jpg') no-repeat center/cover;
+    }
+    header::after{content:"";position:absolute;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.55);}
+    header h1{font-size:4rem;z-index:2;animation:fadeInDown 2s ease;}
+    header p{margin-top:15px;font-size:1.5rem;z-index:2;animation:fadeInUp 2.5s ease;}
+
+    /* Flash Lightning */
+    .flash{position:absolute;top:0;left:0;width:100%;height:100%;background:white;opacity:0;z-index:5;pointer-events:none;}
+
+    /* ---------- SECTIONS ---------- */
+    section{padding:100px 10%;background:#111;position:relative;}
+    section:nth-child(even){background:#181818;}
+    section h2{font-size:2.5rem;margin-bottom:20px;text-align:center;animation:fadeIn 2s;}
+    section p{line-height:1.7;font-size:1.1rem;margin-bottom:20px;animation:fadeInUp 2s;}
+
+    /* ---------- CARDS ---------- */
+    .card-container{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:20px;margin-top:30px;}
+    .card{background:#222;border-radius:15px;padding:20px;box-shadow:0 0 15px rgba(0,0,0,0.5);transition:transform 0.4s;}
+    .card:hover{transform:scale(1.05) rotate(-1deg);box-shadow:0 0 30px #00f7ff;}
+    .card img{width:100%;border-radius:10px;margin-bottom:15px;}
+
+    /* ---------- TRIP PLANNER ---------- */
+    .planner{background:#1a1a1a;padding:20px;border-radius:15px;max-width:500px;margin:auto;text-align:center;box-shadow:0 0 15px #00f7ff;}
+    .planner input,.planner select{padding:10px;margin:10px;width:80%;border-radius:10px;border:none;}
+    .planner button{padding:12px 20px;border:none;background:#00f7ff;color:#000;font-weight:bold;border-radius:10px;cursor:pointer;}
+    .planner button:hover{background:#fff;}
+    .recommendation{margin-top:20px;font-weight:bold;color:#0ff;}
+
+    /* ---------- STATS ---------- */
+    .stats{display:flex;justify-content:space-around;flex-wrap:wrap;text-align:center;margin-top:30px;}
+    .stat{margin:20px;font-size:2rem;}
+    .stat span{display:block;font-size:1rem;margin-top:5px;}
+
+    /* ---------- FESTIVAL CALENDAR ---------- */
+    .festival{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:20px;}
+    .festival div{background:#222;padding:15px;border-radius:10px;transition:0.3s;}
+    .festival div:hover{background:#00f7ff;color:#000;transform:scale(1.05);}
+
+    /* ---------- PARTICLES ---------- */
+    #particles-js{position:absolute;width:100%;height:100%;top:0;left:0;z-index:1;}
+
+    /* ---------- ANIMATIONS ---------- */
+    @keyframes fadeInDown{from{opacity:0;transform:translateY(-50px);}to{opacity:1;transform:translateY(0);}}
+    @keyframes fadeInUp{from{opacity:0;transform:translateY(50px);}to{opacity:1;transform:translateY(0);}}
+    @keyframes fadeIn{from{opacity:0;}to{opacity:1;}}
+
+    /* ---------- FOOTER ---------- */
+    footer{padding:20px;background:#000;text-align:center;font-size:0.9rem;}
+  </style>
+</head>
+<body>
+
+  <!-- HERO -->
+  <header>
+    <div id="particles-js"></div>
+    <h1>Explore Sikkim</h1>
+    <p>Mountains • Culture • Adventure • Peace</p>
+    <div class="flash"></div>
+  </header>
+
+  <!-- ABOUT -->
+  <section>
+    <h2>About Sikkim</h2>
+    <p>Sikkim, a jewel of the Himalayas, is India's least populous state but one of the richest in culture and nature. Known for its breathtaking landscapes, monasteries, lakes, and biodiversity, Sikkim offers a blend of adventure and serenity. Its capital Gangtok is a hub for tourists exploring the state's history, festivals, and Himalayan peaks like Kanchenjunga.</p>
+  </section>
+
+  <!-- HISTORY -->
+  <section>
+    <h2>History & Culture</h2>
+    <p>Sikkim has a fascinating history shaped by Tibetan Buddhism and Himalayan kingdoms. Once a monarchy, it merged with India in 1975. The culture is a unique mix of Lepcha, Bhutia, and Nepali traditions, celebrated through festivals like Losar, Saga Dawa, and Pang Lhabsol.</p>
+  </section>
+
+  <!-- TOURIST PLACES -->
+  <section>
+    <h2>Top Tourist Places</h2>
+    <div class="card-container">
+      <div class="card"><img src="https://upload.wikimedia.org/wikipedia/commons/1/19/Nathula_pass_2.jpg"><h3>Nathula Pass</h3><p>A historic Silk Route pass connecting India and Tibet, known for snow views and Indo-China border.</p></div>
+      <div class="card"><img src="https://upload.wikimedia.org/wikipedia/commons/6/63/Gurudongmar_Lake.jpg"><h3>Gurudongmar Lake</h3><p>One of the highest lakes in the world, sacred to Buddhists and Hindus.</p></div>
+      <div class="card"><img src="https://upload.wikimedia.org/wikipedia/commons/1/1b/Rumtek_Monastery.jpg"><h3>Rumtek Monastery</h3><p>A stunning Tibetan monastery and spiritual center for the Karma Kagyu lineage.</p></div>
+    </div>
+  </section>
+
+  <!-- HIKING & CAMPING -->
+  <section>
+    <h2>Hiking & Camping</h2>
+    <p>Sikkim is a trekker’s paradise with trails to Kanchenjunga Base Camp, Dzongri, and Goecha La. Camping in lush valleys, near alpine lakes, and in pine forests offers an unforgettable Himalayan experience.</p>
+  </section>
+
+  <!-- HOTELS -->
+  <section>
+    <h2>Best Hotels & Dorms</h2>
+    <div class="card-container">
+      <div class="card"><h3>Mayfair Spa Resort</h3><p>Luxury stay with world-class spa, pool, and Himalayan views.</p></div>
+      <div class="card"><h3>Tag Along Backpackers Hostel</h3><p>Affordable dorms with a cozy café and travel community.</p></div>
+      <div class="card"><h3>Norling Guest House</h3><p>Comfortable homestay with traditional hospitality.</p></div>
+    </div>
+  </section>
+
+  <!-- TRIP PLANNER -->
+  <section>
+    <h2>Trip Planner</h2>
+    <div class="planner">
+      <input type="date" id="date">
+      <select id="destination">
+        <option value="Gangtok">Gangtok</option>
+        <option value="Nathula Pass">Nathula Pass</option>
+        <option value="Gurudongmar Lake">Gurudongmar Lake</option>
+      </select>
+      <input type="number" id="budget" placeholder="Budget in ₹">
+      <button onclick="planTrip()">Plan My Trip</button>
+      <div class="recommendation" id="rec"></div>
+    </div>
+  </section>
+
+  <!-- FESTIVAL CALENDAR -->
+  <section>
+    <h2>Festival Calendar</h2>
+    <div class="festival">
+      <div><h3>Losar</h3><p>Tibetan New Year celebration (Feb/March).</p></div>
+      <div><h3>Saga Dawa</h3><p>Celebration of Buddha’s enlightenment (June).</p></div>
+      <div><h3>Pang Lhabsol</h3><p>Unique festival worshiping Mount Kanchenjunga (Sept).</p></div>
+    </div>
+  </section>
+
+  <!-- TOURISM STATS -->
+  <section>
+    <h2>Sikkim in Numbers</h2>
+    <div class="stats">
+      <div class="stat"><span id="tourists">0</span><span>Tourists per Year</span></div>
+      <div class="stat"><span id="peaks">0</span><span>Mountain Peaks</span></div>
+      <div class="stat"><span id="monasteries">0</span><span>Monasteries</span></div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer>
+    <p>© 2025 MountRush | Explore the Himalayas</p>
+  </footer>
+
+  <!-- PARTICLES + THUNDER SCRIPT -->
+  <script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
+  <script>
+    /* Particles */
+    particlesJS("particles-js",{"particles":{"number":{"value":80},"size":{"value":3},"move":{"speed":2},"line_linked":{"enable":true,"opacity":0.4},"color":{"value":"#00f7ff"}}});
+
+    /* Lightning + Thunder */
+    const flash=document.querySelector(".flash");
+    function lightning(){
+      flash.style.opacity=1;
+      let thunder=new Audio("https://www.soundjay.com/nature/thunder-1.mp3");
+      thunder.play();
+      setTimeout(()=>flash.style.opacity=0,200);
+    }
+    setInterval(()=>{if(Math.random()>0.7) lightning();},7000);
+
+    /* Trip Planner */
+    function planTrip(){
+      let dest=document.getElementById("destination").value;
+      let budget=document.getElementById("budget").value;
+      let rec=document.getElementById("rec");
+      if(budget<3000) rec.innerText="Backpacker trip to "+dest+" with dorm stays!";
+      else if(budget<10000) rec.innerText="Mid-range trip with hotels & guided tours in "+dest+".";
+      else rec.innerText="Luxury stay with spa + chauffeur + VIP guides in "+dest+".";
+    }
+
+    /* Animated Stats */
+    function animateValue(id,start,end,duration){
+      let obj=document.getElementById(id);
+      let range=end-start;
+      let stepTime=Math.abs(Math.floor(duration/range));
+      let startTime=new Date().getTime();
+      let endTime=startTime+duration;
+      function run(){
+        let now=new Date().getTime();
+        let remaining=Math.max((endTime-now)/duration,0);
+        let value=Math.round(end-remaining*range);
+        obj.innerText=value.toLocaleString();
+        if(value==end) clearInterval(timer);
+      }
+      let timer=setInterval(run,stepTime);
+      run();
+    }
+    window.onload=function(){
+      animateValue("tourists",0,1500000,3000);
+      animateValue("peaks",0,28,2000);
+      animateValue("monasteries",0,200,2500);
+    }
+  </script>
+</body>
+</html>

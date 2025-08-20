@@ -1,0 +1,158 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>MountRush Shop — Dynamic</title>
+
+  <link rel="stylesheet" href="shop.css">
+
+  <!-- Libraries -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js" defer></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js" defer></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/bodymovin/5.10.2/lottie.min.js" defer></script>
+
+</head>
+<body>
+  <header class="sr-header" role="banner">
+    <div class="brand">
+      <img src="images/MountRush.png" alt="MountRush logo" class="logo" />
+      <div>
+        <h1>MountRush Shop</h1>
+        <p class="tag">Gear for hiking, camping & adventures</p>
+      </div>
+    </div>
+
+    <div class="controls" role="search">
+      <input id="search" aria-label="Search products" placeholder="Search tents, stoves, boots..." />
+      <select id="categoryFilter" aria-label="Category filter"><option value="all">All categories</option></select>
+      <select id="sortBy" aria-label="Sort products">
+        <option value="featured">Featured</option>
+        <option value="price-asc">Price — Low to High</option>
+        <option value="price-desc">Price — High to Low</option>
+        <option value="popular">Popular</option>
+      </select>
+      <button id="cartToggle" aria-label="Open cart" class="btn icon">🛒 <span id="cartCount">0</span></button>
+      <a href="admin.html" class="btn ghost" title="Open admin (local)">Admin</a>
+    </div>
+  </header>
+
+  <main class="container" role="main">
+    <aside class="left-panel" aria-label="filters and info">
+      <div class="promo-card">
+        <h3>Seasonal picks</h3>
+        <p>Get ready — winter essentials & campfire favorites</p>
+        <button id="seasonWinter" class="btn">Winter Picks</button>
+      </div>
+
+      <div class="filter-card" aria-hidden="false">
+        <h4>Quick filters</h4>
+        <div class="chips">
+          <button class="chip" data-filter="waterproof">Waterproof</button>
+          <button class="chip" data-filter="insulated">Insulated</button>
+          <button class="chip" data-filter="lightweight">Lightweight</button>
+          <button class="chip" data-filter="eco">Eco</button>
+        </div>
+      </div>
+
+      <div class="support-card">
+        <h4>Support</h4>
+        <p>Email: <a href="mailto:support@mountrush.com">support@mountrush.com</a></p>
+        <p>Live chat 9–7 (simulated)</p>
+      </div>
+
+      <div class="wishlist-card">
+        <h4>Your wishlist</h4>
+        <div id="wishlistList" style="min-height:48px;color:var(--muted)">No wishlist items yet</div>
+      </div>
+    </aside>
+
+    <section class="catalog" aria-label="product catalog">
+      <div class="toolbar">
+        <h2 id="catalogTitle">All Gear</h2>
+        <div class="view-note">Drag items into the cart • Animated & performant</div>
+      </div>
+
+      <div id="grid" class="product-grid" aria-live="polite"></div>
+
+      <div id="emptyState" class="empty-state hidden" aria-hidden="true">
+        <div id="emptyLottie" style="width:220px;height:220px;margin:0 auto"></div>
+        <h3>No matching products</h3>
+        <p>Try clearing filters or searching a different term.</p>
+      </div>
+    </section>
+  </main>
+
+  <!-- cart sidebar -->
+  <aside id="cartSidebar" class="cart-sidebar" aria-hidden="true">
+    <div class="cart-head">
+      <div><h3>Your Cart</h3><div id="miniCartCount" class="cart-count">0 items</div></div>
+      <div class="cart-actions"><button id="closeCart" class="btn small">✕</button></div>
+    </div>
+
+    <div style="padding:8px 0;border-bottom:1px solid rgba(255,255,255,0.03)">
+      <input id="promoCode" placeholder="Promo code (MOUNT10 / FREESHIP)" />
+      <button id="applyPromo" class="btn small">Apply</button>
+      <div id="promoMsg" class="promo-msg"></div>
+    </div>
+
+    <div id="cartItems" class="cart-items" aria-live="polite"></div>
+
+    <div class="cart-footer">
+      <div class="totals">
+        <div>Subtotal <span id="subtotal">₹0</span></div>
+        <div>Discount <span id="discount">-₹0</span></div>
+        <div>Tax (<span id="taxPct">5</span>%) <span id="tax">₹0</span></div>
+        <div>Shipping <span id="shipping">₹49</span></div>
+        <div class="grand">Total <span id="grandTotal">₹0</span></div>
+      </div>
+      <div class="cart-buttons">
+        <button id="checkoutBtn" class="btn primary">Checkout</button>
+        <button id="clearCart" class="btn ghost">Clear</button>
+      </div>
+    </div>
+  </aside>
+
+  <!-- product modal -->
+  <div id="productModal" class="modal" aria-hidden="true">
+    <div class="modal-card" role="dialog" aria-modal="true">
+      <button id="closeProduct" class="modal-close">✕</button>
+      <div class="modal-grid">
+        <div class="modal-image"><img id="modalImg" src="" alt=""></div>
+        <div class="modal-info">
+          <h3 id="productTitle"></h3>
+          <div id="productMeta" class="meta"></div>
+          <p id="productDesc"></p>
+          <div class="modal-actions">
+            <div>
+              <label for="qty">Qty</label>
+              <input id="qty" type="number" min="1" value="1" />
+            </div>
+            <button id="addToCartModal" class="btn primary">Add to cart</button>
+            <button id="wishlistToggle" class="btn ghost">♡ Wishlist</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- checkout modal (simulated) -->
+  <div id="checkoutModal" class="modal" aria-hidden="true">
+    <div class="modal-card small">
+      <h3>Order placed (simulated)</h3>
+      <p>Checkout is simulated. Integrate Stripe/Razorpay for payments when you're ready.</p>
+      <button id="closeCheckout" class="btn">Close</button>
+    </div>
+  </div>
+
+  <footer class="shop-footer">
+    <div class="footer-inner">
+      <img src="images/MountRush.png" alt="MountRush" class="logo-small" />
+      <div>© MountRush — Beyond trails, into the wild</div>
+      <nav class="footer-links"><a href="#">Terms</a> <a href="#">Privacy</a></nav>
+    </div>
+  </footer>
+
+  <script src="shop.js" defer></script>
+</body>
+</html>

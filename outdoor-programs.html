@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>MountRush — Ultimate Adventures (Final)</title>
+
+  <!-- Libraries -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/bodymovin/5.10.2/lottie.min.js"></script>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+  <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+
+  <style>
+    :root{ --bg:#07101a; --card:#08131a; --glass: rgba(255,255,255,0.03); --accent:#fbc02d; --accent-2:#ff6f61; --maxw:1200px; }
+    html,body{height:100%; margin:0; background:var(--bg); color:#fff; font-family:Inter,system-ui,Roboto,Arial; -webkit-font-smoothing:antialiased}
+
+    /* full canvases */
+    canvas.full{ position:fixed; inset:0; width:100%; height:100%; z-index:-40; pointer-events:none }
+    .layer-svg { position:fixed; left:50%; transform:translateX(-50%); bottom:0; z-index:-35; pointer-events:none }
+
+    /* UI */
+    .ui { position:fixed; top:16px; right:16px; z-index:9999; display:flex; gap:8px; align-items:center; backdrop-filter: blur(6px); background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01)); border-radius:12px; padding:8px }
+    .ui button, .ui select { background:transparent; border:1px solid rgba(255,255,255,0.06); color:#fff; padding:8px 10px; border-radius:8px; cursor:pointer; font-weight:700 }
+
+    /* layout */
+    .wrap{ position:relative; z-index:20; max-width:var(--maxw); margin:0 auto; padding:48px 20px }
+    header{ display:flex; align-items:center; justify-content:space-between; gap:12px }
+    header h1{ color:var(--accent); margin:0 }
+    .hero{ height:54vh; display:flex; align-items:center; justify-content:center; text-align:center }
+    .hero h2{ font-size:clamp(28px,5vw,52px); margin:0 }
+
+    /* adventures */
+    #adventures{ margin-top:28px }
+    .controls { display:flex; gap:10px; align-items:center; justify-content:space-between; flex-wrap:wrap }
+    .filter { display:flex; gap:8px; flex-wrap:wrap }
+    .pill{ padding:8px 12px; border-radius:999px; background:var(--glass); cursor:pointer; font-weight:800; border:1px solid rgba(255,255,255,0.03) }
+    .pill.active{ background:linear-gradient(90deg,var(--accent),var(--accent-2)); color:#08131a }
+
+    .adv-grid{ margin-top:18px; display:grid; grid-template-columns:repeat(auto-fit, minmax(260px, 1fr)); gap:18px }
+    .adv-card{ background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01)); border-radius:14px; min-height:240px; overflow:hidden; position:relative; border:1px solid rgba(255,255,255,0.03); box-shadow: 0 18px 60px rgba(0,0,0,0.6); transform-origin:center; cursor:pointer }
+    .adv-media{ position:absolute; inset:0; background-size:cover; background-position:center; transform-origin:center; filter:brightness(0.85) saturate(1.05) }
+    .adv-anim{ position:absolute; left:12px; top:12px; width:110px; height:110px; z-index:3; pointer-events:none; background:transparent }
+    .adv-info{ position:absolute; inset:auto 12px 12px 12px; z-index:4; color:#fff }
+    .adv-title{ font-weight:900; margin:0 0 6px 0; font-size:18px }
+    .adv-meta{ font-size:13px; opacity:0.95 }
+
+    .badge { display:inline-block; padding:6px 8px; border-radius:8px; background:rgba(0,0,0,0.35); font-weight:800; }
+
+    /* modal */
+    .modal{ position:fixed; inset:0; display:none; align-items:center; justify-content:center; z-index:99999 }
+    .modal.active{ display:flex }
+    .modal-card{ width:min(980px,96%); max-height:88vh; overflow:auto; border-radius:12px; background:linear-gradient(180deg,#07101a,#061015); padding:20px; border:1px solid rgba(255,255,255,0.04) }
+
+    /* map */
+    #map { width:100%; height:520px; border-radius:12px; margin-top:18px }
+
+    /* lens flare */
+    .lens { position:fixed; left:50%; top:14%; transform:translate(-50%,-50%) scale(0.6); width:420px; height:420px; border-radius:50%; z-index:5; mix-blend-mode:screen; background: radial-gradient(circle at 30% 30%, rgba(255,240,200,0.28), transparent 30%); opacity:0; pointer-events:none }
+
+    /* bob */
+    @keyframes bob { 0%{transform:translateY(0)}50%{transform:translateY(-6px)}100%{transform:translateY(0)} }
+    .adv-card.bob{ animation: bob 4s ease-in-out infinite }
+
+    @media (prefers-reduced-motion: reduce){ .adv-card, .lens, canvas.full, .layer-svg{ animation:none; transition:none !important } }
+    @media (max-width:720px){ .hero{ height:44vh } .adv-anim{ width:84px; height:84px } }
+  </style>
+</head>
+<body>
+
+  <!-- Background canvases -->
+  <canvas id="particlesCanvas" class="full" aria-hidden="true"></canvas>
+  <canvas id="starsCanvas" class="full" aria-hidden="true"></canvas>
+
+  <!-- layered SVG mountains -->
+  <div id="parallaxMountains" class="layer-svg" aria-hidden="true"></div>
+  <div id="lens" class="lens" aria-hidden="true"></div>
+
+  <!-- UI -->
+  <div class="ui" role="toolbar" aria-label="effects control">
+    <div style="display:flex;gap:8px;align-items:center">
+      <button id="modeBtn" title="Toggle Cinematic/Lite">Cinematic</button>
+      <select id="quality" title="Quality"><option value="auto">Auto</option><option value="high">High</option><option value="medium">Medium</option><option value="low">Low</option></select>
+    </div>
+    <div style="display:flex; gap:8px; align-items:center;"><button id="pauseAll" data-paused="0">Pause Anim</button></div>
+  </div>
+
+  <div class="wrap">
+    <header>
+      <div class="brand"><div style="width:44px;height:44px;border-radius:8px;background:linear-gradient(90deg,var(--accent),var(--accent-2));display:inline-block"></div><h1 style="display:inline-block;margin-left:12px">MountRush</h1></div>
+      <nav class="subheader" aria-label="main nav"><a href="#treks">TREKS</a> <a href="#special">SPECIAL</a> <a href="#blog">BLOG</a></nav>
+    </header>
+
+    <section class="hero" id="hero"><h2 class="hero-title">Explore — Hike • Camp • Snow • Summit</h2></section>
+
+    <section id="adventures">
+      <div class="controls">
+        <div class="filter" role="tablist" aria-label="Adventure types">
+          <div class="pill active" data-filter="all">All</div>
+          <div class="pill" data-filter="hiking">Hiking</div>
+          <div class="pill" data-filter="camping">Camping</div>
+          <div class="pill" data-filter="water">Water</div>
+          <div class="pill" data-filter="adrenaline">Adrenaline</div>
+          <div class="pill" data-filter="winter">Winter</div>
+          <div class="pill" data-filter="wildlife">Wildlife</div>
+          <div class="pill" data-filter="air">Air</div>
+          <div class="pill" data-filter="relax">Relax</div>
+        </div>
+        <div><input id="search" placeholder="Search adventures, location..." style="padding:8px;border-radius:8px;border:1px solid rgba(255,255,255,0.04);background:transparent;color:#fff;min-width:220px"></div>
+      </div>
+
+      <div class="adv-grid" id="advGrid" aria-live="polite"></div>
+      <div id="map" aria-label="Adventures map"></div>
+    </section>
+
+    <footer style="margin-top:40px;color:rgba(255,255,255,0.6);font-size:13px">© MountRush</footer>
+  </div>
+
+  <!-- modal -->
+  <div class="modal" id="modal" role="dialog" aria-modal="true"><div class="modal-card"><button id="closeModal" style="float:right;background:transparent;border:none;color:#fff;font-size:20px">✕</button><h3 id="modalTitle">Title</h3><div id="modalBody"></div></div></div>
+
+<script>
+// Ensure code runs after DOM ready
+document.addEventListener('DOMContentLoaded', ()=>{
+  // basic app settings
+  window.APP_SETTINGS = window.APP_SETTINGS || {};
+
+  const qualitySelect = document.getElementById('quality');
+  const modeBtn = document.getElementById('modeBtn');
+  const pauseBtn = document.getElementById('pauseAll');
+  const advGrid = document.getElementById('advGrid');
+  const mapEl = document.getElementById('map');
+  const modal = document.getElementById('modal');
+  const modalTitle = document.getElementById('modalTitle');
+  const modalBody = document.getElementById('modalBody');
+  const mountHolder = document.getElementById('parallaxMountains');
+  const pCanvas = document.getElementById('particlesCanvas');
+  const sCanvas = document.getElementById('starsCanvas');
+
+  // state
+  let mode = 'cinematic';
+  let quality = 'auto';
+
+  // particles and contexts
+  let particles = [];
+  let pCtx = null;
+  let sCtx = null;
+  let animRaf = null;
+
+  // adventures (expanded list with many new types)
+  const ADVENTURES = [
+    { id:1, type:'hiking', title:'Sunrise Ridge Hike', loc:'Kedarkantha', duration:'4h', level:'Easy', price:'₹1,499', image:'https://images.unsplash.com/photo-1501785888041-af3ef285b470?q=80&w=1400&auto=format&fit=crop&ixlib=rb-4.0.3&s=1', lottie:'https://assets8.lottiefiles.com/packages/lf20_g1h5tcel.json', coords:[31.0760,77.6360], desc:'Gentle ridge hike for sunrise lovers.'},
+    { id:2, type:'camping', title:'Lakeside Camp & Campfire', loc:'Nainital', duration:'1 night', level:'Easy', price:'₹2,499', image:'https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?q=80&w=1400&auto=format&fit=crop&ixlib=rb-4.0.3&s=2', lottie:'https://assets4.lottiefiles.com/private_files/lf30_jmgekjxg.json', coords:[29.3919,79.4542], desc:'Cozy tents, roaring campfire and stargazing.'},
+    { id:3, type:'trekking', title:'Glacier Pass Trek', loc:'Himachal', duration:'5 days', level:'Hard', price:'₹19,999', image:'https://images.unsplash.com/photo-1500534314209-a25ddb2bd429?q=80&w=1400&auto=format&fit=crop&ixlib=rb-4.0.3&s=3', lottie:'https://assets8.lottiefiles.com/packages/lf20_4kx2q32n.json', coords:[32.2670,77.1887], desc:'Multi-day glacier crossing for experienced trekkers.'},
+    { id:4, type:'water', title:'River Rapid Kayak', loc:'Rishikesh', duration:'Half day', level:'Medium', price:'₹1,999', image:'https://images.unsplash.com/photo-1501594907352-04cda38ebc29?q=80&w=1400&auto=format&fit=crop&ixlib=rb-4.0.3&s=4', lottie:'https://assets8.lottiefiles.com/packages/lf20_4kx2q32n.json', coords:[30.0869,78.2676], desc:'Whitewater thrills on graded rapids.'},
+    { id:5, type:'air', title:'Desert Skydiving', loc:'Sahara Dunes', duration:'Half day', level:'Extreme', price:'₹34,999', image:'https://images.unsplash.com/photo-1500534314209-a25ddb2bd429?q=80&w=1400&auto=format&fit=crop&ixlib=rb-4.0.3&s=5', lottie:'https://assets2.lottiefiles.com/packages/lf20_xlmz9xwm.json', coords:[23.4162,25.6628], desc:'Skydive over endless desert dunes.'},
+    { id:6, type:'winter', title:'Snowboard Weekend', loc:'Manali', duration:'2 days', level:'Medium', price:'₹6,999', image:'https://images.unsplash.com/photo-1519681393784-d120267933ba?q=80&w=1400&auto=format&fit=crop&ixlib=rb-4.0.3&s=6', lottie:'https://assets3.lottiefiles.com/private_files/lf30_vhke4zxe.json', coords:[32.2396,77.1887], desc:'Weekend snowboard camp with lessons.'},
+    { id:7, type:'wildlife', title:'Safari Expedition', loc:'Kaziranga', duration:'3 days', level:'Easy', price:'₹8,499', image:'https://images.unsplash.com/photo-1500534314209-a25ddb2bd429?q=80&w=1400&auto=format&fit=crop&ixlib=rb-4.0.3&s=7', lottie:'https://assets7.lottiefiles.com/packages/lf20_9y7kqjqx.json', coords:[26.5775,93.1711], desc:'Jeep safari to spot rhinos and deer.'},
+    { id:8, type:'camping', title:'Tent Village', loc:'Spiti Valley', duration:'2 nights', level:'Medium', price:'₹4,499', image:'https://images.unsplash.com/photo-1500534314209-a25ddb2bd429?q=80&w=1400&auto=format&fit=crop&ixlib=rb-4.0.3&s=8', lottie:'https://assets6.lottiefiles.com/packages/lf20_0b1r8nwy.json', coords:[32.2432,78.2903], desc:'Traditional tent stay under the stars.'},
+    { id:9, type:'hiking', title:'Alpine Summit', loc:'Valley Peak', duration:'1 day', level:'Hard', price:'₹9,999', image:'https://images.unsplash.com/photo-1500534314209-a25ddb2bd429?q=80&w=1400&auto=format&fit=crop&ixlib=rb-4.0.3&s=9', lottie:'https://assets10.lottiefiles.com/packages/lf20_vf2zrznf.json', coords:[34.0000,76.0000], desc:'Reach the alpine summit with panoramic views.'},
+    { id:10, type:'winter', title:'Ice Cave Exploration', loc:'Ladakh', duration:'3 days', level:'Hard', price:'₹15,999', image:'https://images.unsplash.com/photo-1519681393784-d120267933ba?q=80&w=1400&auto=format&fit=crop&ixlib=rb-4.0.3&s=10', lottie:'https://assets5.lottiefiles.com/packages/lf20_touohxv0.json', coords:[34.1526,77.5770], desc:'Explore the hidden ice caves and frozen sculptures.'},
+    { id:11, type:'camping', title:'Stargazing Camp', loc:'Thar Desert', duration:'1 night', level:'Easy', price:'₹2,199', image:'https://images.unsplash.com/photo-1501785888041-af3ef285b470?q=80&w=1400&auto=format&fit=crop&ixlib=rb-4.0.3&s=11', lottie:'https://assets2.lottiefiles.com/packages/lf20_8rwo5v.json', coords:[26.9124,75.7873], desc:'Clear skies, campfire and telescopes.'},
+    { id:12, type:'hiking', title:'Forest Trail', loc:'Coorg', duration:'3h', level:'Easy', price:'₹899', image:'https://images.unsplash.com/photo-1500534314209-a25ddb2bd429?q=80&w=1400&auto=format&fit=crop&ixlib=rb-4.0.3&s=12', lottie:'https://assets6.lottiefiles.com/packages/lf20_lgx9g2.json', coords:[12.3375,75.8069], desc:'Walk shaded trails through spice plantations.'},
+    { id:13, type:'adrenaline', title:'Volcano Trek', loc:'Bali Ridge', duration:'2 days', level:'Extreme', price:'₹12,499', image:'https://images.unsplash.com/photo-1500534314209-a25ddb2bd429?q=80&w=1400&auto=format&fit=crop&ixlib=rb-4.0.3&s=13', lottie:'https://assets3.lottiefiles.com/packages/lf20_x62chJ.json', coords:[-8.3405,115.0920], desc:'Trek up to the volcanic rim at sunrise.'},
+    { id:14, type:'water', title:'Sea Kayak Expedition', loc:'Andaman', duration:'2 days', level:'Medium', price:'₹7,499', image:'https://images.unsplash.com/photo-1501594907352-04cda38ebc29?q=80&w=1400&auto=format&fit=crop&ixlib=rb-4.0.3&s=14', lottie:'https://assets4.lottiefiles.com/packages/lf20_touohxv0.json', coords:[11.7401,92.6586], desc:'Kayak turquoise waters and hidden coves.'},
+    // Additional new adventure types requested by user
+    { id:15, type:'air', title:'Coastal Paragliding', loc:'Goa Cliffs', duration:'Half day', level:'Medium', price:'₹5,999', image:'https://images.unsplash.com/photo-1504198453319-5ce911bafcde?q=80&w=1400&auto=format&fit=crop&ixlib=rb-4.0.3&s=15', lottie:'https://assets9.lottiefiles.com/packages/lf20_8yq8gq4z.json', coords:[15.2993,74.1240], desc:'Soar along coastal cliffs with gentle thermals.'},
+    { id:16, type:'water', title:'Scuba Reef Dive', loc:'Havelock', duration:'Full day', level:'Advanced', price:'₹9,999', image:'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?q=80&w=1400&auto=format&fit=crop&ixlib=rb-4.0.3&s=16', lottie:'https://assets10.lottiefiles.com/packages/lf20_vf2zrznf.json', coords:[11.9601,92.9956], desc:'Discover coral gardens and reef fish.'},
+    { id:17, type:'explore', title:'Cave Torch Expedition', loc:'Mawsynram Caves', duration:'6h', level:'Medium', price:'₹3,499', image:'https://images.unsplash.com/photo-1501785888041-af3ef285b470?q=80&w=1400&auto=format&fit=crop&ixlib=rb-4.0.3&s=17', lottie:'https://assets7.lottiefiles.com/packages/lf20_6k0oi5p2.json', coords:[25.2833,91.7333], desc:'Explore limestone caves with expert guides.'},
+    { id:18, type:'relax', title:'Hot Spring Retreat', loc:'Manikaran', duration:'Relax', level:'Easy', price:'₹1,299', image:'https://images.unsplash.com/photo-1500534314209-a25ddb2bd429?q=80&w=1400&auto=format&fit=crop&ixlib=rb-4.0.3&s=18', lottie:'https://assets1.lottiefiles.com/packages/lf20_4ed4tqon.json', coords:[31.9033,77.5535], desc:'Soak in natural hot springs and relax.'},
+    { id:19, type:'adrenaline', title:'Jungle Zipline', loc:'Assam Rainforest', duration:'Half day', level:'Medium', price:'₹3,999', image:'https://images.unsplash.com/photo-1500534314209-a25ddb2bd429?q=80&w=1400&auto=format&fit=crop&ixlib=rb-4.0.3&s=19', lottie:'https://assets8.lottiefiles.com/packages/lf20_bkdeou7x.json', coords:[26.2006,92.9376], desc:'Fly across the canopy on zipline bridges.'},
+    { id:20, type:'wildlife', title:'Aurora Hunting', loc:'Svalbard', duration:'3 nights', level:'Easy', price:'₹49,999', image:'https://images.unsplash.com/photo-1501785888041-af3ef285b470?q=80&w=1400&auto=format&fit=crop&ixlib=rb-4.0.3&s=20', lottie:'https://assets6.lottiefiles.com/packages/lf20_xd0s7b5k.json', coords:[78.2232,15.6469], desc:'Chase the northern lights from remote camps.'},
+    { id:21, type:'adventure', title:'Sandboarding Dunes', loc:'Rajasthan Dunes', duration:'Half day', level:'Medium', price:'₹1,699', image:'https://images.unsplash.com/photo-1500534314209-a25ddb2bd429?q=80&w=1400&auto=format&fit=crop&ixlib=rb-4.0.3&s=21', lottie:'https://assets9.lottiefiles.com/packages/lf20_1p2xdo2v.json', coords:[26.9124,75.7873], desc:'Dash down golden dunes on a sandboard.'},
+    { id:22, type:'trekking', title:'Glacier Edge Trek', loc:'Siachen Foothills', duration:'6 days', level:'Extreme', price:'₹54,999', image:'https://images.unsplash.com/photo-1500534314209-a25ddb2bd429?q=80&w=1400&auto=format&fit=crop&ixlib=rb-4.0.3&s=22', lottie:'https://assets3.lottiefiles.com/packages/lf20_vh8m36gx.json', coords:[35.0,78.0], desc:'High-altitude glacier trekking with crampons.'},
+    { id:23, type:'water', title:'Jungle River Rafting', loc:'Bhote Koshi', duration:'Full day', level:'Extreme', price:'₹5,999', image:'https://images.unsplash.com/photo-1501594907352-04cda38ebc29?q=80&w=1400&auto=format&fit=crop&ixlib=rb-4.0.3&s=23', lottie:'https://assets8.lottiefiles.com/packages/lf20_4kx2q32n.json', coords:[27.9620,85.4113], desc:'Thrilling rafting through jungle gorges.'},
+    { id:24, type:'relax', title:'Hot Air Balloon Sunrise', loc:'Jaipur Plains', duration:'Morning', level:'Easy', price:'₹6,499', image:'https://images.unsplash.com/photo-1500534314209-a25ddb2bd429?q=80&w=1400&auto=format&fit=crop&ixlib=rb-4.0.3&s=24', lottie:'https://assets3.lottiefiles.com/packages/lf20_x62chJ.json', coords:[26.9124,75.7873], desc:'Gentle balloon ride over forts at sunrise.'}
+  ];
+
+  // lottie instances map
+  const lottieInstances = new Map();
+  function initLottie(el, path, opts={autoplay:true,loop:true}){
+    if(!el || !path) return null;
+    try{ const anim = lottie.loadAnimation({ container: el, renderer:'svg', loop:opts.loop, autoplay:opts.autoplay, path }); lottieInstances.set(el, anim); return anim; }catch(err){ console.warn('Lottie error', err); return null; }
+  }
+  function pauseAllLottie(){ lottieInstances.forEach(a=>{ try{ a.pause(); }catch(e){} }); }
+  function playAllLottie(){ lottieInstances.forEach(a=>{ try{ if(window.APP_SETTINGS.lottieAuto) a.play(); }catch(e){} }); }
+
+  // quality detection
+  function detectQuality(){ if(quality!=='auto') return quality; const isMobile = window.innerWidth<=720; const saveData = navigator.connection && navigator.connection.saveData; const lowMem = navigator.deviceMemory && navigator.deviceMemory<2; if(isMobile || saveData || lowMem || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return 'low'; return 'high'; }
+  function applyQuality(q){ quality = q || detectQuality(); window.APP_SETTINGS = window.APP_SETTINGS || {}; if(quality==='high'){ window.APP_SETTINGS.particles = 700; window.APP_SETTINGS.lottieAuto = true; } else if(quality==='medium'){ window.APP_SETTINGS.particles = 320; window.APP_SETTINGS.lottieAuto = true; } else { window.APP_SETTINGS.particles = 100; window.APP_SETTINGS.lottieAuto = false; } }
+  applyQuality('auto');
+
+  qualitySelect.addEventListener('change', e=>{ applyQuality(e.target.value); reinitParticles(); toggleLottieAuto(); });
+  modeBtn.addEventListener('click', ()=>{ mode = mode==='cinematic' ? 'lite' : 'cinematic'; modeBtn.textContent = mode==='cinematic' ? 'Cinematic' : 'Lite'; applyMode(); });
+  pauseBtn.addEventListener('click', ()=>{ togglePauseAll(); });
+
+  function applyMode(){ if(mode==='lite'){ document.body.classList.add('lite'); } else { document.body.classList.remove('lite'); } reinitParticles(); toggleLottieAuto(); }
+  function toggleLottieAuto(){ if(window.APP_SETTINGS.lottieAuto===false) pauseAllLottie(); else playAllLottie(); }
+
+  function togglePauseAll(){ const paused = pauseBtn.dataset.paused==='1'; if(!paused){ pauseAllLottie(); pauseBtn.dataset.paused='1'; pauseBtn.textContent='Resume Anim'; cancelAnimationFrame(animRaf); } else { playAllLottie(); pauseBtn.dataset.paused='0'; pauseBtn.textContent='Pause Anim'; lastTime = performance.now(); animRaf = requestAnimationFrame(loop); } }
+
+  // canvas resize and contexts
+  function resizeCanv(){ [pCanvas,sCanvas].forEach(c=>{ if(!c) return; c.width = innerWidth * devicePixelRatio; c.height = innerHeight * devicePixelRatio; c.style.width = innerWidth + 'px'; c.style.height = innerHeight + 'px'; const ctx = c.getContext && c.getContext('2d'); if(c===pCanvas) pCtx = ctx; if(c===sCanvas) sCtx = ctx; if(ctx) ctx.setTransform(devicePixelRatio,0,0,devicePixelRatio,0,0); }); }
+  window.addEventListener('resize', ()=>{ resizeCanv(); reinitParticles(); });
+
+  // particles
+  function initParticles(){ particles = []; const count = Math.max(30, Math.round((window.APP_SETTINGS.particles||200) * (mode==='lite'?0.35:1))); for(let i=0;i<count;i++){ particles.push({ x: Math.random()*innerWidth, y: Math.random()*innerHeight, vx:(Math.random()-0.5)*0.4, vy:(Math.random()*0.6+0.2), size: Math.random()*3+0.8, alpha: Math.random()*0.7+0.05 }); } }
+  function reinitParticles(){ initParticles(); }
+  function drawParticles(){ if(!pCtx) return; pCtx.clearRect(0,0,innerWidth,innerHeight); pCtx.globalCompositeOperation='lighter'; for(let i=0;i<particles.length;i++){ const p = particles[i]; p.x += p.vx; p.y += p.vy; if(p.y>innerHeight+20){ p.y=-10; p.x=Math.random()*innerWidth; } const g = pCtx.createRadialGradient(p.x,p.y,0,p.x,p.y,p.size*4); g.addColorStop(0, `rgba(255,255,255,${p.alpha})`); g.addColorStop(1, 'rgba(255,255,255,0)'); pCtx.fillStyle = g; pCtx.beginPath(); pCtx.arc(p.x,p.y,p.size,0,Math.PI*2); pCtx.fill(); } }
+  function drawStars(now){ if(!sCtx) return; sCtx.clearRect(0,0,innerWidth,innerHeight); for(let i=0;i<80;i++){ const x = (i*137.5) % innerWidth; sCtx.globalAlpha = 0.02 + 0.02*Math.sin(now/1200 + i); sCtx.fillStyle='white'; sCtx.fillRect((x+ (now/30 % innerWidth))%innerWidth, (i*61)%innerHeight, 1,1); } }
+
+  // render grid
+  function renderGrid(list){ advGrid.innerHTML=''; list.forEach((item, idx)=>{
+    const card = document.createElement('div'); card.className='adv-card bob'; card.tabIndex=0; card.dataset.id=item.id; card.dataset.type=item.type;
+
+    const media = document.createElement('div'); media.className='adv-media'; media.style.backgroundImage = `linear-gradient(180deg, rgba(0,0,0,0.18), rgba(0,0,0,0.45)), url('${item.image}')`;
+    card.appendChild(media);
+
+    const animWrap = document.createElement('div'); animWrap.className='adv-anim'; card.appendChild(animWrap);
+    const shouldAuto = window.APP_SETTINGS.lottieAuto !== false;
+    initLottie(animWrap, item.lottie, { autoplay: shouldAuto, loop:true });
+
+    const info = document.createElement('div'); info.className='adv-info';
+    info.innerHTML = `<div class="badge">${item.loc}</div><h4 class="adv-title">${item.title}</h4><div class="adv-meta">${item.duration} • ${item.level} <span style='float:right;font-weight:900'>${item.price}</span></div>`;
+    card.appendChild(info);
+
+    // tilt interactions
+    card.addEventListener('mousemove', e=>{ const r = card.getBoundingClientRect(); const dx = ((e.clientX - r.left)/r.width -0.5)*12; const dy = ((e.clientY - r.top)/r.height -0.5)*8; gsap.to(card, { rotationY: dx, rotationX: -dy, scale:1.02, duration:0.45, ease:'power3.out' }); gsap.to(media, { x: dx*3, y: -dy*3, duration:0.6, ease:'power3.out' }); });
+    ['mouseleave','blur'].forEach(ev=> card.addEventListener(ev, ()=>{ gsap.to(card, { rotationY:0, rotationX:0, scale:1, duration:0.9, ease:'elastic.out(1,0.6)' }); gsap.to(media, { x:0, y:0, duration:0.9, ease:'power3.out' }); }));
+
+    card.addEventListener('click', ()=> openModal(item));
+    advGrid.appendChild(card);
+
+    // entrance animation
+    gsap.fromTo(card, { y:40, opacity:0 }, { y:0, opacity:1, duration:0.9, delay: idx*0.06, ease:'power3.out' });
+  }); }
+
+  // filter/search
+  document.querySelectorAll('.pill').forEach(p=> p.addEventListener('click', ()=>{ document.querySelectorAll('.pill').forEach(x=>x.classList.remove('active')); p.classList.add('active'); applyFilter(); }));
+  document.getElementById('search').addEventListener('input', ()=> applyFilter());
+  function applyFilter(){ const q = document.getElementById('search').value.trim().toLowerCase(); const activeNode = document.querySelector('.pill.active'); const active = activeNode ? activeNode.dataset.filter : 'all'; let list = ADVENTURES.slice(); if(active && active!=='all') list = list.filter(i=> i.type===active); if(q) list = list.filter(i=> (i.title+' '+i.loc+' '+(i.desc||'')).toLowerCase().includes(q)); renderGrid(list); }
+
+  // modal
+  function openModal(item){ modal.classList.add('active'); modalTitle.textContent = item.title; modalBody.innerHTML = `<p>${item.desc}</p><p style="margin-top:8px">Location: ${item.loc} • Duration: ${item.duration} • Level: ${item.level} • Price: ${item.price}</p>`; gsap.fromTo('.modal-card',{ y:20, opacity:0 },{ y:0, opacity:1, duration:0.45, ease:'power3.out' }); }
+  document.getElementById('closeModal').addEventListener('click', ()=> modal.classList.remove('active'));
+  modal.addEventListener('click', (e)=>{ if(e.target===modal) modal.classList.remove('active'); });
+  document.addEventListener('keydown', (e)=>{ if(e.key==='Escape') modal.classList.remove('active'); });
+
+  // Leaflet Map
+  let map = null;
+  try{ map = L.map(mapEl, { preferCanvas:true, zoomControl:true }).setView([23.0,80.0], 4); L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { attribution:'&copy; OpenStreetMap contributors' }).addTo(map); }catch(e){ console.warn('Leaflet init failed', e); }
+
+  const markers = [];
+  if(map){ ADVENTURES.forEach((a, idx)=>{ try{ const m = L.marker(a.coords, { riseOnHover:true }).addTo(map).bindPopup(`<b>${a.title}</b><br>${a.loc}`); markers.push(m); setTimeout(()=>{ try{ m.openPopup(); setTimeout(()=>m.closePopup(), 900); }catch(e){} }, 300 + idx*140); }catch(e){ console.warn('marker fail', e); } }); }
+
+  // route polyline safe animation
+  if(map && ADVENTURES.length>1){ try{ const latlngs = [ADVENTURES[0].coords, ADVENTURES[2].coords, ADVENTURES[1].coords]; const route = L.polyline(latlngs, { color:'#ff6f61', weight:3, opacity:0 }).addTo(map); if(route && route._path && route._path.style){ try{ gsap.to(route._path.style, { opacity:1, duration:1.2, delay:1.2 }); }catch(e){ let proxy={o:0}; gsap.to(proxy, { o:1, duration:1.2, delay:1.2, onUpdate: ()=> route.setStyle({ opacity: proxy.o }) }); } } else { let proxy={o:0}; gsap.to(proxy, { o:1, duration:1.2, delay:1.2, onUpdate: ()=> { try{ route.setStyle({ opacity: proxy.o }); }catch(e){} } }); } }catch(err){ console.warn('route fail', err); } }
+
+  // parallax mountains SVG
+  mountHolder.innerHTML = `
+    <svg viewBox="0 0 1200 220" width="1200" height="220" aria-hidden="true">
+      <defs>
+        <linearGradient id="mg1" x1="0" x2="0" y1="0" y2="1">
+          <stop offset="0" stop-color="#0b2b22"/>
+          <stop offset="1" stop-color="#041014"/>
+        </linearGradient>
+      </defs>
+      <path d="M0 180 C120 120 280 120 360 160 C420 192 540 120 680 160 C760 192 900 120 1200 180 L1200 220 L0 220 Z" fill="#05161a" opacity="0.95"></path>
+    </svg>`;
+  gsap.to('#parallaxMountains', { yPercent:-4, duration:6, yoyo:true, repeat:-1, ease:'sine.inOut' });
+
+  // start canvases + particles + loop
+  resizeCanv(); initParticles(); let lastTime = performance.now(); function loop(ts){ lastTime = lastTime || ts; drawStars(ts); drawParticles(); animRaf = requestAnimationFrame(loop); }
+  animRaf = requestAnimationFrame(loop);
+
+  // hero intro
+  gsap.from('.hero-title', { y:40, opacity:0, duration:1.2, ease:'power3.out', delay:0.3 });
+
+  // initial render
+  renderGrid(ADVENTURES);
+
+  // visibility handling
+  document.addEventListener('visibilitychange', ()=>{ if(document.hidden){ pauseAllLottie(); cancelAnimationFrame(animRaf); } else { if(window.APP_SETTINGS.lottieAuto) playAllLottie(); lastTime = performance.now(); animRaf = requestAnimationFrame(loop); } });
+
+  // expose for debugging
+  window.__APP = { renderGrid, applyQuality, applyMode, ADVENTURES, initParticles };
+});
+</script>
+</body>
+</html>

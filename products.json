@@ -1,0 +1,10 @@
+[
+  { "id": "p-tent-01", "title": "Summit 2P Tent", "category": "camping", "price": 8499, "image": "images/tent.jpg", "desc": "Ultra-light 2-person tent, waterproof, compact pack." },
+  { "id": "p-stove-01", "title": "Trail Compact Stove", "category": "camping", "price": 2499, "image": "images/stove.jpg", "desc": "Gas canister stove with wind guard. Fast boil." },
+  { "id": "p-boots-01", "title": "Alpine Hiker Boots", "category": "hiking", "price": 6999, "image": "images/boots.jpg", "desc": "Waterproof boots with durable grip and ankle support." },
+  { "id": "p-pack-01", "title": "Voyager 45L Pack", "category": "gear", "price": 4999, "image": "images/pack.jpg", "desc": "Comfort-fit trekking pack with rain cover." },
+  { "id": "p-sleep-01", "title": "Insulated Sleeping Bag", "category": "camping", "price": 3999, "image": "images/sleepingbag.jpg", "desc": "Comfortable to -5°C, compressible and light." },
+  { "id": "p-water-01", "title": "Purify Water Filter", "category": "gear", "price": 1999, "image": "images/filter.jpg", "desc": "Portable water filter for safe drinking on trail." },
+  { "id": "p-light-01", "title": "Trail Lantern", "category": "camping", "price": 999, "image": "images/lantern.jpg", "desc": "Rechargeable lantern with variable brightness." },
+  { "id": "p-jacket-01", "title": "StormShell Jacket", "category": "apparel", "price": 5999, "image": "images/jacket.jpg", "desc": "Windproof & waterproof hardshell for alpine weather." }
+]

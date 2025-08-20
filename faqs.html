@@ -1,0 +1,232 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>MountRush — FAQs</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;500;700;900&display=swap" rel="stylesheet">
+  <style>
+    /* =============================
+    FILE: /assets/css/mountain-theme.css
+    ============================= */
+    :root{
+      --mr-bg:#0f1a1a;            /* deep forest */
+      --mr-card:#101e1e;          /* slightly lighter */
+      --mr-text:#e6f0ea;          /* mist white */
+      --mr-accent:#c9852f;        /* trail orange */
+      --mr-accent-2:#6bbf59;      /* alpine green */
+      --mr-muted:#9fb3ad;
+      --mr-shadow:0 10px 30px rgba(0,0,0,.3);
+      --mr-radius:18px;
+    }
+    *{box-sizing:border-box}
+    html,body{margin:0;padding:0;background:var(--mr-bg);color:var(--mr-text);font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif}
+    a{color:var(--mr-accent);text-decoration:none}
+    img{max-width:100%;display:block}
+    /* Header */
+    .mr-header{position:sticky;top:0;z-index:50;background:rgba(15,26,26,.85);backdrop-filter:saturate(140%) blur(8px);border-bottom:1px solid rgba(255,255,255,.06)}
+    .mr-nav{max-width:1200px;margin:auto;display:flex;align-items:center;gap:18px;padding:12px 16px}
+    .mr-logo{display:flex;align-items:center;gap:10px}
+    .mr-logo img{height:40px;width:auto;border-radius:10px}
+    .mr-menu{display:flex;gap:18px;margin-left:8px;flex-wrap:wrap}
+    .mr-menu a{padding:8px 12px;border-radius:999px;color:var(--mr-text);opacity:.9;border:1px solid transparent}
+    .mr-menu a:hover{border-color:rgba(255,255,255,.08);background:rgba(255,255,255,.04);opacity:1}
+    .mr-right{margin-left:auto;display:flex;align-items:center;gap:12px}
+    .search{background:#0b1414;border:1px solid rgba(255,255,255,.08);padding:8px 12px;border-radius:999px;color:var(--mr-text)}
+    /* Hero */
+    .hero{position:relative;min-height:52vh;display:grid;place-items:center;overflow:hidden;background:#081010}
+    .hero .bg{position:absolute;inset:0;background-position:center;background-size:cover;filter:saturate(1.1) contrast(1.05)}
+    .hero .overlay{position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,.35),rgba(0,0,0,.6))}
+    .hero .inner{position:relative;text-align:center;max-width:900px;padding:80px 16px}
+    .hero h1{font-size:clamp(32px,5vw,56px);margin:0 0 8px}
+    .hero p{margin:0 auto;max-width:720px;color:var(--mr-muted)}
+    .chip{display:inline-flex;align-items:center;gap:8px;padding:6px 12px;border-radius:999px;background:rgba(107,191,89,.12);border:1px solid rgba(107,191,89,.25);color:#cfead0;font-weight:600}
+    /* Sections */
+    .section{max-width:1200px;margin:40px auto;padding:0 16px}
+    .card{background:var(--mr-card);border:1px solid rgba(255,255,255,.06);box-shadow:var(--mr-shadow);border-radius:var(--mr-radius)}
+    .card.pad{padding:20px}
+    .grid{display:grid;gap:20px}
+    .grid-3{grid-template-columns:repeat(3,minmax(0,1fr))}
+    .grid-2{grid-template-columns:repeat(2,minmax(0,1fr))}
+    @media (max-width:980px){.grid-3{grid-template-columns:1fr 1fr}.mr-menu{display:none}}
+    @media (max-width:680px){.grid-2,.grid-3{grid-template-columns:1fr}}
+    .btn{display:inline-flex;align-items:center;gap:10px;padding:10px 16px;border-radius:12px;background:var(--mr-accent);color:#1a1206;border:0;font-weight:700;cursor:pointer}
+    .btn.secondary{background:#122322;color:var(--mr-text);border:1px solid rgba(255,255,255,.08)}
+    .btn.ghost{background:transparent;border:1px solid rgba(255,255,255,.1);color:var(--mr-text)}
+    .btn:hover{transform:translateY(-1px)}
+    /* Forms */
+    .form{display:grid;gap:14px}
+    .input{position:relative}
+    .input input,.input textarea,.input select{width:100%;background:#0b1414;border:1px solid rgba(255,255,255,.08);padding:14px 12px;border-radius:12px;color:var(--mr-text)}
+    .input label{position:absolute;left:12px;top:10px;font-size:12px;color:var(--mr-muted)}
+    /* Contact specifics */
+    .map-wrap{height:360px;border-radius:var(--mr-radius);overflow:hidden;border:1px solid rgba(255,255,255,.08);position:relative}
+    .map-status{position:absolute;right:10px;bottom:10px;background:rgba(0,0,0,.55);padding:6px 10px;border-radius:10px;font-size:12px;color:#cfead0;border:1px solid rgba(255,255,255,.08)}
+    .leaflet-container{height:100%;width:100%}
+    /* Profile */
+    .tabs{display:flex;gap:8px;flex-wrap:wrap}
+    .tab{padding:10px 14px;border-radius:12px;border:1px solid rgba(255,255,255,.1);cursor:pointer}
+    .tab.active{background:rgba(201,133,47,.15);border-color:rgba(201,133,47,.35)}
+    .tab-panels{margin-top:16px}
+    .progress{height:12px;background:#0c1515;border-radius:999px;overflow:hidden;border:1px solid rgba(255,255,255,.08)}
+    .progress > span{display:block;height:100%;background:linear-gradient(90deg,var(--mr-accent),var(--mr-accent-2))}
+    .badges{display:flex;gap:12px;flex-wrap:wrap}
+    .badge{background:#122322;border:1px dashed rgba(107,191,89,.4);padding:10px 12px;border-radius:999px;font-weight:700}
+    /* FAQ */
+    .faq{border-radius:14px;border:1px solid rgba(255,255,255,.08);overflow:hidden}
+    .faq-item{border-bottom:1px solid rgba(255,255,255,.06);background:#0c1616}
+    .faq-q{display:flex;justify-content:space-between;align-items:center;padding:16px 18px;cursor:pointer}
+    .faq-a{max-height:0;overflow:hidden;transition:max-height .35s ease}
+    .faq-item.open .faq-a{max-height:320px}
+    /* Careers */
+    .filters{display:flex;gap:10px;flex-wrap:wrap}
+    .job{display:flex;flex-direction:column;gap:10px;padding:16px}
+    .job .meta{color:var(--mr-muted);font-size:14px}
+    /* Footer */
+    .mr-footer{margin-top:60px;border-top:1px solid rgba(255,255,255,.06);padding:24px;color:var(--mr-muted);text-align:center}
+  </style>
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js" defer></script>
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/ScrollTrigger.min.js" defer></script>
+</head>
+<body>
+  <div id="header"></div>
+  <section class="hero">
+    <div class="bg" style="background-image:url('https://images.unsplash.com/photo-1549880338-65ddcdfd017b?q=80&w=1600&auto=format&fit=crop');"></div>
+    <div class="overlay"></div>
+    <div class="inner">
+      <span class="chip" data-reveal>Have a question?</span>
+      <h1 data-reveal>FAQs</h1>
+      <p data-reveal>Everything about preparation, safety, fitness and bookings for your MountRush adventures.</p>
+    </div>
+  </section>
+  <div class="section">
+    <div class="card pad" style="margin-bottom:14px">
+      <input class="search" id="faq-search" placeholder="Search FAQs (e.g., shoes, fitness, refund)" style="width:100%">
+    </div>
+    <div class="faq" id="faq-list">
+      <div class="faq-item" data-reveal>
+        <div class="faq-q"><strong>What fitness level is required?</strong><span>+</span></div>
+        <div class="faq-a"><div class="pad" style="padding:0 18px 16px">Most treks are beginner friendly. We recommend being able to walk 6–8 km comfortably. Prepare with light jogs and stair climbs for 2–3 weeks.</div></div>
+      </div>
+      <div class="faq-item" data-reveal>
+        <div class="faq-q"><strong>What’s included in the trek fee?</strong><span>+</span></div>
+        <div class="faq-a"><div class="pad" style="padding:0 18px 16px">Certified trek leaders, camping gear, permits, meals during the trek, and first-aid support. Transport to basecamp is usually extra.</div></div>
+      </div>
+      <div class="faq-item" data-reveal>
+        <div class="faq-q"><strong>How do refunds and rescheduling work?</strong><span>+</span></div>
+        <div class="faq-a"><div class="pad" style="padding:0 18px 16px">Free reschedule up to 7 days before start. Refunds as per policy (processing fees apply). Weather cancellations are rescheduled or credited.</div></div>
+      </div>
+      <div class="faq-item" data-reveal>
+        <div class="faq-q"><strong>Is rental gear sanitized?</strong><span>+</span></div>
+        <div class="faq-a"><div class="pad" style="padding:0 18px 16px">Yes. Tents, sleeping bags, and jackets are cleaned and UV-sanitized after each trip.</div></div>
+      </div>
+      <div class="faq-item" data-reveal>
+        <div class="faq-q"><strong>What should I pack?</strong><span>+</span></div>
+        <div class="faq-a"><div class="pad" style="padding:0 18px 16px">Layered clothing, waterproof shoes, thermals in winter, rain cover in monsoon, personal meds, and reusable water bottle. A detailed checklist is emailed after booking.</div></div>
+      </div>
+    </div>
+  </div>
+  <div id="footer"></div>
+  <script>
+    /* =============================
+    FILE: /assets/js/animations.js
+    ============================= */
+    // GSAP base
+    window.addEventListener('DOMContentLoaded',()=>{
+      if(!window.gsap) return;
+      const {gsap} = window;
+      gsap.utils.toArray('[data-reveal]').forEach((el,i)=>{
+        gsap.fromTo(el,{y:24,opacity:0},{y:0,opacity:1,duration:.8,delay:i*0.08,ease:'power3.out',scrollTrigger:{trigger:el,start:'top 85%'}});
+      });
+      // parallax hero bg
+      const bg=document.querySelector('.hero .bg');
+      if(bg && window.ScrollTrigger){
+        gsap.to(bg,{scale:1.08,yPercent:8,scrollTrigger:{trigger:'.hero',start:'top top',end:'bottom top',scrub:true}});
+      }
+    });
+    // Tabs helper
+    function initTabs(){
+      document.querySelectorAll('[data-tabs]').forEach(group=>{
+        const tabs=[...group.querySelectorAll('.tab')];
+        const panels=[...group.parentElement.querySelectorAll('[data-panel]')];
+        tabs.forEach((t,idx)=>t.addEventListener('click',()=>{
+          tabs.forEach(b=>b.classList.remove('active'));
+          t.classList.add('active');
+          panels.forEach((p,i)=>p.style.display=i===idx?'block':'none');
+        }));
+        // set first active
+        tabs[0]?.click();
+      });
+    }
+    // FAQ helper
+    function initFAQ(){
+      document.querySelectorAll('.faq-item').forEach(item=>{
+        item.querySelector('.faq-q').addEventListener('click',()=>{
+          item.classList.toggle('open');
+        });
+      });
+    }
+    // Careers filter
+    function initJobFilters(){
+      const chips=document.querySelectorAll('[data-filter]');
+      const cards=document.querySelectorAll('[data-job]');
+      chips.forEach(c=>c.addEventListener('click',()=>{
+        const tag=c.getAttribute('data-filter');
+        chips.forEach(x=>x.classList.remove('active'));
+        c.classList.add('active');
+        cards.forEach(card=>{
+          const cat=card.getAttribute('data-job');
+          card.style.display=(tag==='all'||tag===cat)?'block':'none';
+        });
+      }));
+    }
+    // Modal
+    function openModal(id){document.getElementById(id).style.display='grid'}
+    function closeModal(id){document.getElementById(id).style.display='none'}
+
+    /* =============================
+    COMMON: Header & Footer Snippet (reuse in every page)
+    ============================= */
+    function mountRushHeader(active){
+      return `<header class="mr-header">
+        <nav class="mr-nav">
+          <a class="mr-logo" href="/index.html">
+            <img src="/assets/img/MountRush.png" alt="MountRush" />
+            <strong>MountRush</strong>
+          </a>
+          <div class="mr-menu">
+            <a href="/careers.html" ${active==='careers'?'style="background:rgba(255,255,255,.08)"':''}>CAREERS</a>
+            <a href="/contacts.html" ${active==='contacts'?'style="background:rgba(255,255,255,.08)"':''}>CONTACTS</a>
+            <a href="/shop.html">SHOP</a>
+            <a href="/rent-gear.html">RENT GEAR</a>
+            <a href="/profile.html" ${active==='profile'?'style="background:rgba(255,255,255,.08)"':''}>MY PROFILE</a>
+            <a href="/upcoming-treks.html">UPCOMING TREKS</a>
+            <a href="/special-treks.html">SPECIAL TREKS</a>
+            <a href="/faqs.html" ${active==='faqs'?'style="background:rgba(255,255,255,.08)"':''}>FAQS</a>
+            <a href="/outdoor-program.html">OUTDOOR PROGRAMS</a>
+          </div>
+          <div class="mr-right">
+            <input class="search" placeholder="Search…" />
+            <a class="btn ghost" href="/login.html">Login/Register</a>
+          </div>
+        </nav>
+      </header>`}
+    function mountRushFooter(){
+      const year=new Date().getFullYear();
+      return `<footer class="mr-footer">© ${year} MountRush — Beyond Trails, Into the Wild • Follow us on <a href="#">Instagram</a> • <a href="#">YouTube</a> • <a href="#">X</a></footer>`
+    }
+    document.getElementById('header').innerHTML = mountRushHeader('faqs');
+    document.getElementById('footer').innerHTML = mountRushFooter();
+    initFAQ();
+    // search filter
+    const input=document.getElementById('faq-search');
+    input.addEventListener('input',()=>{
+      const q=input.value.toLowerCase();
+      document.querySelectorAll('#faq-list .faq-item').forEach(it=>{
+        it.style.display=it.innerText.toLowerCase().includes(q)?'block':'none';
+      });
+    });
+  </script>
+</body>
+</html>

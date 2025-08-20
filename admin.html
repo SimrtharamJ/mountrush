@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>MountRush Admin — Products & Coupons</title>
+  <link rel="stylesheet" href="shop.css">
+  <style>
+    /* admin-specific tweaks */
+    .admin-wrap{max-width:1100px;margin:20px auto;padding:18px}
+    .admin-grid{display:flex;gap:18px}
+    .panel{background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));padding:14px;border-radius:12px;border:1px solid rgba(255,255,255,0.03);color:#fff}
+    .panel h3{margin:0 0 8px}
+    textarea{width:100%;min-height:160px;padding:10px;border-radius:8px;border:1px solid rgba(255,255,255,0.04);background:rgba(255,255,255,0.02);color:#fff}
+    .coupon-row{display:flex;gap:8px;align-items:center;margin-bottom:8px}
+    .coupon-row input{padding:6px;border-radius:8px;border:1px solid rgba(255,255,255,0.04);background:rgba(255,255,255,0.02);color:#fff}
+    .small{font-size:13px;padding:6px 8px}
+    .muted{color:var(--muted);font-size:13px}
+    .products-list{max-height:520px;overflow:auto;padding:8px;display:grid;gap:8px}
+    .product-item{display:flex;gap:8px;align-items:center;background:rgba(255,255,255,0.01);padding:8px;border-radius:8px}
+    .product-item img{width:56px;height:44px;object-fit:cover;border-radius:6px}
+  </style>
+</head>
+<body>
+  <div class="admin-wrap">
+    <header style="display:flex;justify-content:space-between;align-items:center">
+      <h1 style="color:var(--accent)">MountRush Admin</h1>
+      <div><a href="shop.html" class="btn ghost">Open Shop</a></div>
+    </header>
+
+    <div class="admin-grid" style="margin-top:12px">
+      <div style="flex:1" class="panel">
+        <h3>Products — import / edit</h3>
+        <div class="muted">Load a JSON product array here, or paste a public Google Sheets CSV URL (see README).</div>
+        <div style="display:flex;gap:8px;margin-top:8px">
+          <input id="sheetUrl" placeholder="Public Google Sheets CSV URL" style="flex:1;padding:8px;border-radius:8px;background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.04);color:#fff">
+          <button id="importSheet" class="btn small">Fetch</button>
+        </div>
+
+        <div style="margin-top:8px">
+          <label class="muted">Or paste products JSON:</label>
+          <textarea id="productJson" placeholder='[{"id":"p-1","title":"Example","category":"camping","price":1000,"image":"images/x.jpg","desc":"..."}]'></textarea>
+          <div style="display:flex;gap:8px;margin-top:8px">
+            <input id="uploadFile" type="file" accept=".json" />
+            <button id="applyProducts" class="btn">Apply</button>
+            <button id="exportProducts" class="btn ghost">Export .json</button>
+            <button id="clearOverride" class="btn small ghost">Clear override</button>
+          </div>
+        </div>
+
+        <hr style="margin:12px 0;border:none;border-top:1px solid rgba(255,255,255,0.03)">
+
+        <h4>Current products preview</h4>
+        <div id="productsList" class="products-list"></div>
+      </div>
+
+      <div style="width:360px" class="panel">
+        <h3>Coupons</h3>
+        <div id="couponsList"></div>
+
+        <hr style="margin:10px 0;border:none;border-top:1px solid rgba(255,255,255,0.03)">
+
+        <h4>Create coupon</h4>
+        <div style="display:flex;flex-direction:column;gap:8px">
+          <input id="couponCode" placeholder="Code e.g. MOUNT10" />
+          <select id="couponType"><option value="percent">Percent</option><option value="fixed">Fixed</option><option value="freeship">Free shipping</option></select>
+          <input id="couponValue" placeholder="Value (percent or fixed)" />
+          <button id="createCoupon" class="btn">Create coupon</button>
+        </div>
+
+        <hr style="margin:10px 0;border:none;border-top:1px solid rgba(255,255,255,0.03)">
+
+        <h4>CMS / Export</h4>
+        <div class="muted">After editing, export to JSON and commit to your repo or upload to your CMS.</div>
+        <div style="display:flex;gap:8px;margin-top:8px">
+          <button id="downloadProducts" class="btn">Download products.json</button>
+          <button id="pushToServer" class="btn ghost small" title="No server provided">Push (example)</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="admin.js" defer></script>
+</body>
+</html>

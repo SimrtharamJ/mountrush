@@ -1,0 +1,609 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>MountRush — Kedarkantha Trek (Cinematic Winter Classic)</title>
+
+<!-- Fonts & Icons -->
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;500;700;900&display=swap" rel="stylesheet">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+
+<!-- GSAP + ScrollTrigger + Lottie + tsParticles -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bodymovin/5.9.6/lottie.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/tsparticles@2.11.1/tsparticles.bundle.min.js"></script>
+
+<style>
+  :root{
+    --accent:#2b8fd0;
+    --accent-2:#9fd3ff;
+    --muted:#9aa3ab;
+    --bg-dark:#071321;
+    --bg-dawn:#eaf6ff;
+    --glass: rgba(255,255,255,0.06);
+    --maxwidth:1180px;
+    --radius:14px;
+  }
+  *{box-sizing:border-box}
+  html,body{height:100%}
+  body{
+    margin:0;
+    font-family:Inter, system-ui, -apple-system, "Segoe UI", Roboto, Arial;
+    background:linear-gradient(180deg,var(--bg-dark) 0%, #06202a 60%);
+    color:#fff;
+    -webkit-font-smoothing:antialiased;
+    -moz-osx-font-smoothing:grayscale;
+    scroll-behavior:smooth;
+  }
+  a{color:inherit}
+  .container{max-width:var(--maxwidth);margin:0 auto;padding:22px}
+
+  /* Header */
+  header.site-header{position:fixed;left:0;right:0;top:12px;z-index:1000;padding:6px 26px;display:flex;align-items:center;justify-content:space-between;pointer-events:auto}
+  .site-header .left{display:flex;align-items:center;gap:12px}
+  .logo img{height:42px}
+  nav.main-nav{display:flex;gap:14px;align-items:center}
+  .main-nav a{padding:8px 10px;border-radius:10px;text-decoration:none;font-weight:700;color:rgba(255,255,255,0.95)}
+  .btn-book {background:var(--accent);color:#071321;padding:10px 14px;border-radius:12px;border:0;font-weight:900;cursor:pointer}
+
+  /* Sticky progress */
+  .progress-vertical{position:fixed;left:18px;top:50%;transform:translateY(-50%);z-index:900}
+  .progress-track{width:8px;height:210px;background:rgba(255,255,255,0.06);border-radius:12px;padding:6px}
+  .progress-pin{width:14px;height:14px;border-radius:50%;background:var(--accent);transform:translateY(0)}
+
+  /* section base */
+  section.panel{min-height:100vh;display:flex;align-items:center;padding:0;margin:0;position:relative;overflow:hidden}
+  section .inner{max-width:var(--maxwidth);margin:0 auto;padding:48px;width:100%}
+
+  /* Hero */
+  .hero{
+    background:linear-gradient(180deg, rgba(4,18,28,0.6), rgba(2,8,15,0.2));
+    position:relative;
+  }
+  .hero .bg{position:absolute;inset:0;background-image:url('https://images.unsplash.com/photo-1517821362016-3be8f3b8a5f2?auto=format&fit=crop&w=2000&q=70');background-size:cover;background-position:center;filter:brightness(.56) contrast(1.02);transform-origin:center;z-index:1}
+  .hero .parallax-layers{position:absolute;left:0;right:0;bottom:0;height:48vh;pointer-events:none;z-index:2}
+  .hero-grid{position:relative;z-index:6;display:grid;grid-template-columns:1fr 480px;gap:28px;align-items:center}
+  .hero-title{font-size:44px;line-height:1.02;margin:0;font-weight:900}
+  .hero-lead{color:var(--muted);margin-top:10px}
+  .hero-tags{display:flex;gap:8px;margin-top:14px}
+  .tag{background:rgba(255,255,255,0.06);padding:8px 10px;border-radius:999px;font-weight:800;color:#fff}
+  .hero-card{background:linear-gradient(180deg, rgba(255,255,255,0.04), rgba(255,255,255,0.02));padding:12px;border-radius:12px;backdrop-filter: blur(6px);box-shadow:0 30px 80px rgba(0,0,0,0.6)}
+  .hero-media{height:320px;border-radius:10px;overflow:hidden;position:relative}
+  .hero-media img{width:100%;height:100%;object-fit:cover;display:block}
+
+  /* floating micro elements */
+  .floating {position:absolute;z-index:5;pointer-events:none;mix-blend-mode:screen}
+
+  /* Feature */
+  .feature{display:grid;grid-template-columns:480px 1fr;gap:28px;align-items:center}
+  .feature-visual{height:420px;border-radius:12px;overflow:hidden}
+  .feature-content p{color:var(--muted);line-height:1.6}
+
+  /* Adventures grid (expanded) */
+  .adv-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:12px}
+  .adv-card{background:linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.01));padding:16px;border-radius:12px;min-height:170px;display:flex;flex-direction:column;justify-content:space-between;cursor:pointer;overflow:hidden}
+  .adv-icon{font-size:32px;color:var(--accent);margin-bottom:8px}
+
+  /* Stats row */
+  .stats-row{display:flex;gap:12px;margin-top:18px;flex-wrap:wrap}
+  .stat-pill{background:rgba(255,255,255,0.03);padding:12px 14px;border-radius:10px;font-weight:800;display:flex;flex-direction:column;align-items:flex-start}
+
+  /* Horizontal gallery */
+  .h-gallery{margin-top:18px;overflow:hidden;border-radius:12px;background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));padding:12px}
+  .h-track{display:flex;gap:12px;padding:8px;cursor:grab;overflow:auto;scroll-behavior:smooth}
+  .h-item{min-width:320px;border-radius:12px;overflow:hidden;flex:0 0 auto;background:#0b1012}
+  .h-item img{width:100%;height:220px;object-fit:cover;display:block}
+
+  /* Blogs */
+  .blogs-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:12px}
+  .blog-card{border-radius:12px;overflow:hidden;background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));cursor:pointer}
+  .blog-card img{width:100%;height:160px;object-fit:cover}
+
+  /* Testimonials & Booking */
+  .testi {display:flex;gap:14px;align-items:center}
+  .booking{background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));padding:16px;border-radius:12px}
+
+  /* modal & lightbox */
+  .modal{position:fixed;inset:0;background:rgba(2,6,10,0.82);display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;z-index:2100}
+  .modal.show{opacity:1;pointer-events:auto}
+  .modal .sheet{background:#fff;color:#071321;border-radius:12px;max-width:920px;width:100%;max-height:88vh;overflow:auto;padding:20px}
+
+  .lightbox{position:fixed;inset:0;background:rgba(2,6,10,0.9);display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;z-index:2100}
+  .lightbox.show{opacity:1;pointer-events:auto}
+  .lightbox img{max-width:92%;max-height:86%;border-radius:8px}
+
+  /* overlay transition element (waterfall between sections) */
+  .section-overlay{position:fixed;inset:0;background:linear-gradient(180deg,var(--bg-dark),#071a21);pointer-events:none;z-index:1500;transform:translateY(100%);}
+
+  /* responsive */
+  @media (max-width:1100px){
+    .hero-grid{grid-template-columns:1fr}
+    .feature{grid-template-columns:1fr}
+    .adv-grid{grid-template-columns:repeat(2,1fr)}
+    .blogs-grid{grid-template-columns:repeat(2,1fr)}
+    .h-item{min-width:260px}
+  }
+  @media (max-width:620px){
+    .main-nav{display:none}
+    .hero-title{font-size:28px}
+    .hero-media{height:220px}
+    .adv-grid{grid-template-columns:1fr}
+    .blogs-grid{grid-template-columns:1fr}
+  }
+</style>
+</head>
+<body>
+
+<header class="site-header">
+  <div class="left">
+    <div class="logo"><img src="MountRush.png" alt="MountRush" onerror="this.style.display='none'"/><div style="font-weight:900">MountRush</div></div>
+  </div>
+  <nav class="main-nav" aria-label="Main">
+    <a href="#overview">Overview</a>
+    <a href="#featured">Kedarkantha</a>
+    <a href="#adventure">Adventures</a>
+    <a href="#gallery">Gallery</a>
+    <a href="#blogs">Guides</a>
+    <button class="btn-book" id="nav-book">Book</button>
+  </nav>
+</header>
+
+<!-- progress pin -->
+<div class="progress-vertical" aria-hidden="true">
+  <div class="progress-track"><div class="progress-pin" id="progressPin"></div></div>
+</div>
+
+<!-- overlay for waterfall transitions -->
+<div class="section-overlay" id="sectionOverlay" aria-hidden="true"></div>
+
+<!-- particles -->
+<div id="tsparticles" aria-hidden="true" style="position:fixed;inset:0;z-index:4;pointer-events:none"></div>
+
+<!-- main content -->
+<main>
+
+  <!-- HERO -->
+  <section class="panel hero" id="overview" data-section="overview">
+    <div class="bg" id="heroBg" aria-hidden="true"></div>
+
+    <div class="parallax-layers" aria-hidden="true">
+      <!-- subtle mountain vector layers for parallax -->
+      <svg viewBox="0 0 1200 220" preserveAspectRatio="none" style="width:100%;height:100%">
+        <path d="M0,140 C120,40 260,80 420,120 C540,150 640,70 760,120 C880,170 1000,40 1200,120 L1200,220 L0,220 Z" fill="#0d1a1f" opacity="0.22"></path>
+      </svg>
+    </div>
+
+    <div class="inner hero-grid container">
+      <div>
+        <h1 class="hero-title" id="heroTitle">Kedarkantha Trek — Snowy Summit & Pine-Lined Meadows</h1>
+        <p class="hero-lead" id="heroLead">Classic winter trek in Himachal — frosty forests, panoramic summit at dawn and cozy camps. Ideal for beginners and photographers.</p>
+
+        <div class="hero-tags" id="heroTags">
+          <div class="tag">5 days</div>
+          <div class="tag">Max 3,810 m</div>
+          <div class="tag">Easy - Moderate</div>
+        </div>
+
+        <div style="margin-top:18px">
+          <button class="btn-book" id="heroReserve">Reserve Spot</button>
+          <button class="btn-book" id="heroItin" style="background:transparent;color:#fff;border:1px solid rgba(255,255,255,0.06)">View Itinerary</button>
+        </div>
+
+        <div class="stats-row">
+          <div class="stat-pill">
+            <div id="statAlt" style="font-size:18px;font-weight:900">3810 m</div>
+            <div style="font-size:12px;color:var(--muted)">Max Elevation</div>
+          </div>
+          <div class="stat-pill">
+            <div style="font-size:18px;font-weight:900">~22 km</div><div style="font-size:12px;color:var(--muted)">Approx Distance</div>
+          </div>
+          <div class="stat-pill">
+            <div id="statDays" style="font-size:18px;font-weight:900">5</div><div style="font-size:12px;color:var(--muted)">Days</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="hero-card" aria-hidden="false">
+        <div class="hero-media" id="heroMedia">
+          <img src="https://images.unsplash.com/photo-1517821362016-3be8f3b8a5f2?auto=format&fit=crop&w=1600&q=70" alt="Kedarkantha landscape">
+          <div id="lottieHero" style="position:absolute;right:12px;bottom:10px;width:110px;height:110px"></div>
+        </div>
+        <div style="display:flex;justify-content:space-between;margin-top:12px">
+          <div style="font-weight:800">Kedarkantha</div>
+          <div class="small" style="color:var(--muted)">Best: Dec - Mar (snow)</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FEATURED -->
+  <section class="panel" id="featured" data-section="featured">
+    <div class="inner container">
+      <h2 class="section-title">Featured Trek — Kedarkantha</h2>
+      <div class="feature">
+        <div class="feature-visual"><img src="https://images.unsplash.com/photo-1516912485017-9ea2b3c0b8ef?auto=format&fit=crop&w=1400&q=70" alt="Kedarkantha view"></div>
+        <div class="feature-content">
+          <h3>Snow, Pines & A Gentle Summit</h3>
+          <p>Kedarkantha is the quintessential winter trek near Dehradun/Haridwar gateways — dense pine forests, open snow bowls and a short summit approach that rewards you with 360° views of the Dhauldhar and Pir Panjal ranges. Nights are crisp; mornings deliver spectacular light for photography. Expect easy navigation, well-marked trails and comfortable campsites.</p>
+
+          <div class="adv-grid">
+            <div class="adv-card tilt" data-adv="1"><div><div class="adv-icon"><i class="fa-solid fa-mountain-sun"></i></div><div class="label">Summit Sunrise</div><div class="small" style="opacity:.85;margin-top:8px">Short early-morning hike for panoramic vistas.</div></div><div style="margin-top:8px;font-weight:800">5 days</div></div>
+            <div class="adv-card tilt" data-adv="2"><div><div class="adv-icon"><i class="fa-solid fa-campground"></i></div><div class="label">Snow Camping</div><div class="small" style="opacity:.85;margin-top:8px">Twin-share tents, hot meals and campfires (seasonal).</div></div><div style="margin-top:8px;font-weight:800">Meals included</div></div>
+            <div class="adv-card tilt" data-adv="3"><div><div class="adv-icon"><i class="fa-solid fa-camera"></i></div><div class="label">Photo Hotspots</div><div class="small" style="opacity:.85;margin-top:8px">Best light at sunrise and along the ridge.</div></div><div style="margin-top:8px;font-weight:800">Fitness: Easy–Moderate</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ADVENTURE EXPANDED -->
+  <section class="panel" id="adventure" data-section="adventure">
+    <div class="inner container">
+      <h2 class="section-title">More Adventure — Add-ons & Experiences</h2>
+
+      <div class="adv-grid" style="margin-top:10px">
+        <!-- Expanded list -->
+        <div class="adv-card tilt"><div><div class="adv-icon"><i class="fa-solid fa-skiing"></i></div><div class="label">Snowshoe Walks</div><div class="small" style="opacity:.85;margin-top:8px">Guided snowshoe trails through pine forests.</div></div><div style="margin-top:8px;font-weight:800">Winter Add-on</div></div>
+
+        <div class="adv-card tilt"><div><div class="adv-icon"><i class="fa-solid fa-sleigh"></i></div><div class="label">Village Walks</div><div class="small" style="opacity:.85;margin-top:8px">Short cultural visits to Sankri & nearby hamlets.</div></div><div style="margin-top:8px;font-weight:800">Local Guides</div></div>
+
+        <div class="adv-card tilt"><div><div class="adv-icon"><i class="fa-solid fa-fire"></i></div><div class="label">Campfire Stories</div><div class="small" style="opacity:.85;margin-top:8px">Evening talks & local cuisine tasting.</div></div><div style="margin-top:8px;font-weight:800">Included</div></div>
+
+        <div class="adv-card tilt"><div><div class="adv-icon"><i class="fa-solid fa-mountain"></i></div><div class="label">Beginner-Friendly Trails</div><div class="small" style="opacity:.85;margin-top:8px">Short daily hikes with gradual elevation gain.</div></div><div style="margin-top:8px;font-weight:800">Great for first-timers</div></div>
+
+        <div class="adv-card tilt"><div><div class="adv-icon"><i class="fa-solid fa-binoculars"></i></div><div class="label">Bird & Wildlife</div><div class="small" style="opacity:.85;margin-top:8px">Spotting Himalayan birds and small mammals on early walks.</div></div><div style="margin-top:8px;font-weight:800">Guided</div></div>
+
+        <div class="adv-card tilt"><div><div class="adv-icon"><i class="fa-solid fa-person-running"></i></div><div class="label">Trail Walks</div><div class="small" style="opacity:.85;margin-top:8px">Short brisk walks for fit trekkers between camps.</div></div><div style="margin-top:8px;font-weight:800">Morning Sessions</div></div>
+
+        <div class="adv-card tilt"><div><div class="adv-icon"><i class="fa-solid fa-camera-retro"></i></div><div class="label">Photography Clinics</div><div class="small" style="opacity:.85;margin-top:8px">Tips for shooting in snow & low temperatures.</div></div><div style="margin-top:8px;font-weight:800">Optional</div></div>
+
+        <div class="adv-card tilt"><div><div class="adv-icon"><i class="fa-solid fa-cloud-moon"></i></div><div class="label">Star-Gazing Nights</div><div class="small" style="opacity:.85;margin-top:8px">Clear skies with low light pollution for astronomy talks.</div></div><div style="margin-top:8px;font-weight:800">Blankets provided</div></div>
+
+        <div class="adv-card tilt"><div><div class="adv-icon"><i class="fa-solid fa-hands-clapping"></i></div><div class="label">Skills & Safety</div><div class="small" style="opacity:.85;margin-top:8px">Avalanche awareness, layering and cold-weather tips.</div></div><div style="margin-top:8px;font-weight:800">Included Briefing</div></div>
+      </div>
+
+      <!-- counters -->
+      <div style="margin-top:18px;display:flex;gap:12px;flex-wrap:wrap">
+        <div class="stat-pill"><div id="countTrips" style="font-size:20px;font-weight:900">0</div><div style="font-size:12px;color:var(--muted)">Trips organized</div></div>
+        <div class="stat-pill"><div id="countTrekkers" style="font-size:20px;font-weight:900">0</div><div style="font-size:12px;color:var(--muted)">Trekkers helped</div></div>
+        <div class="stat-pill"><div id="countYears" style="font-size:20px;font-weight:900">0</div><div style="font-size:12px;color:var(--muted)">Years guiding</div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- HORIZONTAL GALLERY -->
+  <section class="panel" id="gallery" data-section="gallery">
+    <div class="inner container">
+      <h2 class="section-title">Photo Gallery — Drag to Explore</h2>
+      <div class="h-gallery" id="hGallery">
+        <div class="h-track" id="hTrack" tabindex="0" aria-label="Horizontal photo gallery">
+          <!-- JS will inject items -->
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- BLOGS -->
+  <section class="panel" id="blogs" data-section="blogs">
+    <div class="inner container">
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <h2 class="section-title">Guides & Stories</h2>
+        <div class="small" style="color:var(--muted)">Packing, safety & trip reports</div>
+      </div>
+
+      <div class="blogs-grid" id="blogsGrid">
+        <!-- injected -->
+      </div>
+    </div>
+  </section>
+
+  <!-- TESTIMONIALS & BOOKING -->
+  <section class="panel" id="booking" data-section="booking">
+    <div class="inner container" style="display:grid;grid-template-columns:1fr 420px;gap:28px;align-items:start">
+      <div>
+        <h2 class="section-title">Testimonials</h2>
+        <div style="margin-top:12px;display:flex;flex-direction:column;gap:12px">
+          <div class="testi"><div class="avatar"><img src="https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=200&q=60" style="width:68px;height:68px;border-radius:50%;object-fit:cover"></div><div class="quote" style="padding:10px;background:rgba(255,255,255,0.03);border-radius:10px">"Kedarkantha sunrise was unreal — crisp air and endless mountains." — Ria</div></div>
+          <div class="testi"><div class="avatar"><img src="https://images.unsplash.com/photo-1545996124-f72f9fd8e6a6?auto=format&fit=crop&w=200&q=60" style="width:68px;height:68px;border-radius:50%;object-fit:cover"></div><div class="quote" style="padding:10px;background:rgba(255,255,255,0.03);border-radius:10px">"Perfect for first-time snow trekkers — well organised and fun." — Sameer</div></div>
+        </div>
+      </div>
+
+      <div>
+        <h2 class="section-title">Book This Trek</h2>
+        <form id="bookingForm" class="booking" style="margin-top:12px">
+          <div style="display:flex;gap:8px"><input name="name" placeholder="Your name" required style="flex:1;padding:10px;border-radius:8px;border:1px solid rgba(255,255,255,0.06);background:transparent;color:#fff"></div>
+          <div style="display:flex;gap:8px;margin-top:8px"><input name="email" placeholder="Email" type="email" required style="flex:1;padding:10px;border-radius:8px;border:1px solid rgba(255,255,255,0.06);background:transparent;color:#fff"></div>
+          <div style="display:flex;gap:8px;margin-top:8px"><input name="phone" placeholder="Phone" required style="flex:1;padding:10px;border-radius:8px;border:1px solid rgba(255,255,255,0.06);background:transparent;color:#fff"></div>
+          <div style="display:flex;gap:8px;margin-top:8px"><input name="start" type="date" style="flex:1;padding:10px;border-radius:8px;border:1px solid rgba(255,255,255,0.06);background:transparent;color:#fff"><select name="group" style="padding:10px;border-radius:8px;border:1px solid rgba(255,255,255,0.06);background:transparent;color:#fff"><option>Solo</option><option>2</option><option>3-4</option><option>5+</option></select></div>
+          <div style="display:flex;gap:8px;margin-top:12px"><button class="btn-book" type="submit">Reserve (Demo)</button><button id="clearBooking" type="button" style="background:transparent;border:1px solid rgba(255,255,255,0.06);padding:10px;border-radius:8px">Clear</button></div>
+          <div style="margin-top:10px;color:var(--muted)">Demo saved locally. Replace with backend POST to process real bookings.</div>
+        </form>
+      </div>
+    </div>
+  </section>
+
+  <!-- spacer / footer -->
+  <section class="panel" data-section="footer" style="align-items:flex-end;padding-bottom:42px">
+    <div style="text-align:center;width:100%;opacity:.9">© <span id="siteYear"></span> MountRush — All rights reserved</div>
+  </section>
+</main>
+
+<!-- Blog modal -->
+<div class="modal" id="blogModal" aria-hidden="true">
+  <div class="sheet" id="blogModalSheet"></div>
+</div>
+
+<!-- Lightbox -->
+<div class="lightbox" id="lightbox" aria-hidden="true"><img id="lightboxImg" src="" alt=""><button id="lbClose" style="position:fixed;right:18px;top:18px;background:transparent;border:0;color:#fff;font-size:28px;cursor:pointer">&times;</button></div>
+
+<script>
+/* -------------------------
+   Editable content (trekData)
+   ------------------------- */
+const trekData = {
+  title: "Kedarkantha Trek",
+  duration: "5 days",
+  altitude: 3810,
+  difficulty: "Easy - Moderate",
+  season: "Dec - Mar (snow) / Apr - Jun",
+  price: "₹6,499",
+  gallery: [
+    {src:"https://images.unsplash.com/photo-1517821362016-3be8f3b8a5f2?auto=format&fit=crop&w=1200&q=70", caption:"Kedarkantha ridge at sunrise"},
+    {src:"https://images.unsplash.com/photo-1516912485017-9ea2b3c0b8ef?auto=format&fit=crop&w=1200&q=70", caption:"Pine forests & snow"},
+    {src:"https://images.unsplash.com/photo-1482192596544-9eb780fc7f66?auto=format&fit=crop&w=1200&q=60", caption:"Summit panorama"},
+    {src:"https://images.unsplash.com/photo-1500534314209-a25ddb2bd429?auto=format&fit=crop&w=1200&q=60", caption:"Camp under stars"},
+    {src:"https://images.unsplash.com/photo-1526481280698-9f1fcd1c0a62?auto=format&fit=crop&w=1200&q=60", caption:"Frozen stream & rocky outcrops"},
+    {src:"https://images.unsplash.com/photo-1519681393784-d120267933ba?auto=format&fit=crop&w=1200&q=60", caption:"Snow-covered pines"}
+  ],
+  blogs: [
+    {id:1, title:"Winter Packing for Kedarkantha", excerpt:"Layering, boots & staying warm — a focused checklist.", img:"https://images.unsplash.com/photo-1549887534-2f53b2f2b2d3?auto=format&fit=crop&w=1200&q=60", content:"<p><strong>Boots:</strong> Waterproof insulated boots. <br/><strong>Layers:</strong> Thermal base, fleece, down jacket and waterproof shell.</p>"},
+    {id:2, title:"Summit Strategy & Photography", excerpt:"How to time the summit for golden-hour panoramas.", img:"https://images.unsplash.com/photo-1500534314209-a25ddb2bd429?auto=format&fit=crop&w=1200&q=60", content:"<p>Start early, use headlamps and aim to reach the ridge before sunrise. Carry spare batteries (cold drains batteries fast).</p>"},
+    {id:3, title:"Acclimatisation & Cold Safety", excerpt:"Simple steps to stay healthy in winter treks.", img:"https://images.unsplash.com/photo-1519681393784-d120267933ba?auto=format&fit=crop&w=1200&q=60", content:"<p>Keep moving, hydrate, eat calorie-dense warm meals, and monitor for signs of frostbite or hypothermia. Carry hand warmers.</p>"}
+  ]
+};
+
+/* -------------------------
+   Helpers & UI wiring
+   ------------------------- */
+// set year
+document.getElementById('siteYear').textContent = new Date().getFullYear();
+// hero text
+document.getElementById('heroTitle').textContent = trekData.title;
+document.getElementById('heroLead').textContent = `${trekData.duration} • ${trekData.season} • ${trekData.difficulty}`;
+
+// gallery build
+const hTrack = document.getElementById('hTrack');
+trekData.gallery.forEach(g=>{
+  const el = document.createElement('div'); el.className='h-item';
+  el.innerHTML = `<img src="${g.src}" alt="${g.caption}"><div style="padding:10px;color:#fff;font-weight:800">${g.caption}</div>`;
+  // open lightbox on click
+  el.addEventListener('click', ()=> openLightbox(g.src));
+  hTrack.appendChild(el);
+});
+
+// blogs build
+const blogsGrid = document.getElementById('blogsGrid');
+trekData.blogs.forEach(b=>{
+  const card = document.createElement('div'); card.className='blog-card tilt';
+  card.innerHTML = `<img src="${b.img}" alt="${b.title}"><div class="blog-body"><div style="font-weight:900">${b.title}</div><div class="small" style="color:var(--muted);margin-top:6px">${b.excerpt}</div></div>`;
+  card.addEventListener('click', ()=> openBlog(b));
+  blogsGrid.appendChild(card);
+});
+
+/* Lightbox */
+function openLightbox(src){
+  const lb = document.getElementById('lightbox'); const img = document.getElementById('lightboxImg');
+  img.src = src; lb.classList.add('show'); lb.setAttribute('aria-hidden','false');
+}
+document.getElementById('lbClose').addEventListener('click', ()=>{ const lb=document.getElementById('lightbox'); lb.classList.remove('show'); lb.setAttribute('aria-hidden','true'); });
+
+/* Blog modal */
+function openBlog(post){
+  const modal = document.getElementById('blogModal'); const sheet = document.getElementById('blogModalSheet');
+  sheet.innerHTML = `<h2 style="margin-top:0">${post.title}</h2><div class="small" style="color:#666;margin-bottom:12px">Guide</div>${post.content}<div style="margin-top:18px"><button id="closeBlog" class="btn-book">Close</button></div>`;
+  modal.classList.add('show'); modal.setAttribute('aria-hidden','false');
+  document.getElementById('closeBlog').addEventListener('click', closeBlog);
+}
+function closeBlog(){ const m=document.getElementById('blogModal'); m.classList.remove('show'); m.setAttribute('aria-hidden','true'); }
+document.getElementById('blogModal').addEventListener('click', (e)=>{ if(e.target===e.currentTarget) closeBlog(); });
+
+/* Booking demo local storage */
+const bookingForm = document.getElementById('bookingForm');
+const bookingKey = 'kedar_booking_demo_v1';
+const saved = localStorage.getItem(bookingKey);
+if(saved){ const obj = JSON.parse(saved); for(const k in obj) if(bookingForm[k]) bookingForm[k].value = obj[k]; }
+bookingForm.addEventListener('submit', (e)=>{ e.preventDefault(); const fd = new FormData(bookingForm); const obj=Object.fromEntries(fd.entries()); localStorage.setItem(bookingKey, JSON.stringify(obj)); alert('Reservation saved locally (demo). Replace with backend POST for real bookings.'); });
+document.getElementById('clearBooking').addEventListener('click', ()=>{ localStorage.removeItem(bookingKey); bookingForm.reset(); });
+
+/* nav book */
+document.getElementById('nav-book').addEventListener('click', ()=> document.getElementById('booking').scrollIntoView({behavior:'smooth'}));
+document.getElementById('heroReserve').addEventListener('click', ()=> document.getElementById('booking').scrollIntoView({behavior:'smooth'}));
+document.getElementById('heroItin').addEventListener('click', ()=> document.getElementById('featured').scrollIntoView({behavior:'smooth'}));
+
+/* open/close lightbox on ESC */
+document.addEventListener('keydown', (e)=>{ if(e.key==='Escape'){ closeBlog(); const lb=document.getElementById('lightbox'); lb.classList.remove('show'); lb.setAttribute('aria-hidden','true'); } });
+
+/* -------------------------
+   Particles (tsParticles)
+   ------------------------- */
+tsParticles.load("tsparticles", {
+  fpsLimit:60,
+  particles: {
+    number: { value: 48, density:{ enable:true, value_area:800 } },
+    color: { value: "#ffffff" },
+    opacity: { value: { min: 0.04, max: 0.18 } },
+    size: { value: { min: 1, max: 3 } },
+    move: { enable:true, speed: 0.32, direction:"top", outModes: "out" }
+  },
+  interactivity: { detectsOn:"canvas", events:{ onhover:{enable:false}, onclick:{enable:false} } },
+  detectRetina:true
+});
+
+/* -------------------------
+   Lottie micro animation
+   ------------------------- */
+try{
+  lottie.loadAnimation({
+    container: document.getElementById('lottieHero'),
+    renderer: 'svg',
+    loop: true,
+    autoplay: true,
+    animationData: {
+      v:"5.5.8", fr: 30, ip:0, op:60, w:120, h:120, nm:"cloud", assets:[], layers:[
+        {ty:4, nm:"circle", shapes:[{ty:"el", p:{k:[60,60]}, s:{k:[80,80]}, c:{k:[0.17,0.56,0.82,1]}}], ip:0, op:60, st:0, bm:0}
+      ]
+    }
+  });
+}catch(e){ /* ignore errors */ }
+
+/* -------------------------
+   GSAP + ScrollTrigger
+   ------------------------- */
+gsap.registerPlugin(ScrollTrigger);
+
+// overlay for waterfall transitions
+const overlay = document.getElementById('sectionOverlay');
+function showOverlay() {
+  gsap.killTweensOf(overlay);
+  gsap.set(overlay,{y:'100%'});
+  gsap.to(overlay,{y:'0%',duration:0.52,ease:'power2.out'});
+}
+function hideOverlay() {
+  gsap.to(overlay,{y:'-100%',duration:0.6,ease:'power2.in',onComplete:()=>gsap.set(overlay,{y:'100%'} )});
+}
+
+// night-to-day transition controlled by scroll
+ScrollTrigger.create({
+  start: 0,
+  end: document.body.scrollHeight - window.innerHeight,
+  onUpdate: self => {
+    const p = self.progress;
+    const dark = [7,19,33]; // rgb
+    const dawn = [234,246,255];
+    const r = Math.round(dark[0] + (dawn[0]-dark[0]) * Math.min(p*1.1,1));
+    const g = Math.round(dark[1] + (dawn[1]-dark[1]) * Math.min(p*1.1,1));
+    const b = Math.round(dark[2] + (dawn[2]-dark[2]) * Math.min(p*1.1,1));
+    document.body.style.background = `linear-gradient(180deg, rgb(${r},${g},${b}) 0%, #071827 60%)`;
+    if (window.tsParticles) {
+      const instance = window.tsParticles?.domItem(0);
+      if (instance) instance.options.particles.move.speed = 0.25 + p*0.5;
+    }
+  }
+});
+
+// hero initial entrance
+gsap.from('.hero-title', { y:40, opacity:0, duration:1, ease:'power3.out', delay:0.12 });
+gsap.from('.hero-lead', { y:30, opacity:0, duration:1, ease:'power3.out', delay:0.24 });
+gsap.from('.hero-card', { y:40, opacity:0, duration:1, ease:'power3.out', delay:0.36 });
+
+// animate parallax background scale on scroll
+gsap.to('.bg',{ scale:1.12, ease:'none', scrollTrigger:{ trigger: '.hero', start:'top top', end:'bottom top', scrub:0.9 }});
+
+// reveal adv-cards with stagger when they enter
+gsap.utils.toArray('.adv-card').forEach((el,i)=>{
+  gsap.from(el,{y:40,opacity:0,duration:0.9,delay:i*0.04,ease:'power3.out',scrollTrigger:{trigger:el,start:'top 85%'}});
+});
+
+// stats counter animations
+function countUp(el, to, duration=1200){
+  const start=0; let startTime=null;
+  function step(ts){
+    if(!startTime) startTime=ts;
+    const progress=Math.min((ts-startTime)/duration,1);
+    el.textContent = Math.round(start + (to-start)*progress);
+    if(progress<1) requestAnimationFrame(step);
+  }
+  requestAnimationFrame(step);
+}
+ScrollTrigger.create({trigger:'#adventure', start:'top 80%', onEnter: ()=> { countUp(document.getElementById('countTrips'), 248, 1200); countUp(document.getElementById('countTrekkers'), 1920, 1200); countUp(document.getElementById('countYears'), 7, 900);} });
+
+// gallery reveal
+gsap.from('#hTrack .h-item',{y:40,opacity:0,duration:0.9,stagger:0.08,scrollTrigger:{trigger:'#gallery',start:'top 80%'}});
+
+// blog reveal
+gsap.utils.toArray('.blog-card').forEach((b,i)=> gsap.from(b,{y:30,opacity:0,duration:0.8,delay:i*0.06,scrollTrigger:{trigger:b,start:'top 92%'}}));
+
+// testimonial reveal
+gsap.utils.toArray('.testi').forEach((t,i)=> gsap.from(t,{x:-20,opacity:0,duration:0.8,delay:i*0.08,scrollTrigger:{trigger:t,start:'top 92%'}}));
+
+// progress pin movement
+ScrollTrigger.create({
+  start:0, end: document.body.scrollHeight - window.innerHeight,
+  onUpdate: self=>{
+    const px = self.progress * 160;
+    gsap.to('#progressPin',{y:px,duration:0.14,ease:'none'});
+  }
+});
+
+// waterfall overlay between major sections
+const sections = document.querySelectorAll('section.panel');
+sections.forEach((sec, idx)=>{
+  ScrollTrigger.create({
+    trigger: sec,
+    start: "top 60%",
+    onEnter: () => {
+      if (sec.id !== 'overview') {
+        showOverlay();
+        setTimeout(()=> hideOverlay(), 450);
+      }
+    }
+  });
+});
+
+/* -------------------------
+   Tilt effect for cards
+   ------------------------- */
+function initTilt(){
+  document.querySelectorAll('.tilt').forEach(el=>{
+    el.style.transformStyle = 'preserve-3d';
+    el.addEventListener('mousemove',(e)=>{
+      const rect = el.getBoundingClientRect();
+      const cx = rect.left + rect.width/2;
+      const cy = rect.top + rect.height/2;
+      const dx = (e.clientX - cx) / rect.width;
+      const dy = (e.clientY - cy) / rect.height;
+      const rotY = dx * 8;
+      const rotX = -dy * 6;
+      gsap.to(el, { rotationY: rotY, rotationX: rotX, scale:1.03, duration:0.28, ease:'power3.out' });
+    });
+    el.addEventListener('mouseleave', ()=> gsap.to(el,{rotationY:0,rotationX:0,scale:1,duration:0.6,ease:'power3.out'}));
+  });
+}
+initTilt();
+
+/* -------------------------
+   Horizontal drag for gallery
+   ------------------------- */
+(function(){
+  const track = document.getElementById('hTrack');
+  let isDown=false, startX, scrollLeft;
+  track.addEventListener('pointerdown', (e)=>{ isDown=true; track.style.cursor='grabbing'; startX = e.pageX - track.offsetLeft; scrollLeft = track.scrollLeft; track.setPointerCapture(e.pointerId); });
+  track.addEventListener('pointerup', (e)=>{ isDown=false; track.style.cursor='grab'; try{ track.releasePointerCapture(e.pointerId);}catch(e){} });
+  track.addEventListener('pointerleave', ()=>{ isDown=false; track.style.cursor='grab'; });
+  track.addEventListener('pointermove', (e)=>{ if(!isDown) return; e.preventDefault(); const x = e.pageX - track.offsetLeft; const walk = (x - startX) * 1.4; track.scrollLeft = scrollLeft - walk; });
+})();
+
+/* -------------------------
+   Lightweight lazy image loading
+   ------------------------- */
+document.querySelectorAll('img').forEach(img=>{
+  if(!img.complete){
+    img.addEventListener('load', ()=> { img.style.opacity = 1; });
+  }
+});
+
+/* -------------------------
+   Lightbox close
+   ------------------------- */
+document.getElementById('lightbox').addEventListener('click', (e)=>{ if(e.target.id === 'lightbox' || e.target.id==='lbClose') { document.getElementById('lightbox').classList.remove('show'); document.getElementById('lightbox').setAttribute('aria-hidden','true'); } });
+
+/* -------------------------
+   small accessibility: scroll to top on load
+   ------------------------- */
+window.scrollTo({top:0,behavior:'auto'});
+
+</script>
+</body>
+</html>

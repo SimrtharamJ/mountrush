@@ -1,0 +1,193 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>MountRush — Special Treks</title>
+
+<!-- Fonts & GSAP -->
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;700;900&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+
+<style>
+:root { --ink:#eaf2ff; --muted:#b7c6d8; --brand:#ce7a1f; --panel:#0f1420; --glass:rgba(255,255,255,.06); }
+* { box-sizing:border-box; }
+body { margin:0; font-family:'Inter',sans-serif; background:#0b0f14; color:var(--ink); overflow-x:hidden; }
+
+/* Topbar */
+.topbar { position:sticky; top:0; z-index:20; display:flex; justify-content:space-between; align-items:center; padding:12px 18px; background:rgba(10,14,20,.7); backdrop-filter:blur(8px); border-bottom:1px solid rgba(255,255,255,.06); }
+.brand, .cta { color:var(--ink); text-decoration:none; font-weight:700; }
+
+/* Hero */
+.hero { position:relative; height:80vh; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; overflow:hidden; }
+.hero video { position:absolute; inset:0; width:100%; height:100%; object-fit:cover; filter:brightness(.6) saturate(1.2); }
+.hero .overlay { position:absolute; inset:0; background:radial-gradient(circle at 70% 30%, rgba(206,122,31,.25), transparent 40%); }
+.hero h1 { font-size:clamp(36px,6vw,64px); font-weight:900; margin:0; color:#ffcf33; text-shadow:0 0 15px rgba(0,0,0,0.6); }
+.hero p { color:var(--muted); margin-top:10px; font-size:1.1rem; }
+.cloud, .bird { position:absolute; opacity:.8; pointer-events:none; }
+@keyframes drift { from{transform:translateX(-200px);} to{transform:translateX(2000px);} }
+@keyframes fly { from{transform:translateX(-200px) translateY(0);} to{transform:translateX(2000px) translateY(-100px);} }
+.cloud { animation:drift 60s linear infinite; }
+.bird { animation:fly 25s linear infinite; }
+
+/* Grid */
+.grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(280px,1fr)); gap:20px; max-width:1200px; margin:40px auto; padding:0 16px; }
+.card { background:var(--panel); border:1px solid rgba(255,255,255,.08); border-radius:18px; overflow:hidden; box-shadow:0 8px 30px rgba(0,0,0,.3); transform:rotateY(10deg); opacity:0; transition:border 0.3s ease; }
+.card:hover { border-color:var(--brand); box-shadow:0 0 20px var(--brand); }
+.card .cover { height:200px; background-size:cover; background-position:center; transition:transform 0.5s ease; }
+.card:hover .cover { transform:scale(1.05); }
+.card .content { padding:14px; }
+.card h3 { margin:0 0 6px; }
+.card .meta { font-size:13px; color:var(--muted); }
+.card .tags { display:flex; flex-wrap:wrap; gap:6px; margin:8px 0; }
+.tag { background:var(--glass); border:1px solid rgba(255,255,255,.12); padding:4px 8px; border-radius:999px; font-size:12px; }
+.btn { display:inline-block; margin-top:8px; padding:10px 14px; border-radius:12px; font-weight:700; color:#111; background:var(--brand); text-decoration:none; position:relative; overflow:hidden; }
+.btn::after { content:""; position:absolute; top:0; left:-75px; width:50px; height:100%; background:linear-gradient(120deg, rgba(255,255,255,0.6), transparent); transform:skewX(-25deg); animation:shine 3s infinite; }
+@keyframes shine { 0%{left:-75px;} 100%{left:125%;} }
+
+/* Band sections */
+.band { position:relative; padding:60px 16px; text-align:center; border-top:1px solid rgba(255,255,255,.06); overflow:hidden; }
+.band h2 { margin:0 0 8px; }
+.band p { max-width:760px; margin:0 auto 14px; color:var(--muted); }
+.band canvas { position:absolute; inset:0; width:100%; height:100%; pointer-events:none; }
+
+/* Footer */
+footer { padding:24px; text-align:center; color:var(--muted); border-top:1px solid rgba(255,255,255,.08); opacity:0; transform:translateY(20px); transition:all 0.5s ease; }
+footer.glow { color:#fff; text-shadow:0 0 10px var(--brand); }
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <a class="brand" href="#">← Upcoming Treks</a>
+  <div>Special Treks</div>
+  <a class="cta" href="#">Book Now</a>
+</header>
+
+<section class="hero">
+  <video autoplay muted loop playsinline>
+    <source src="222630.mp4" type="video/mp4">
+  </video>
+  <div class="overlay"></div>
+  <h1>Once-in-a-season Adventures</h1>
+  <p>Winter camping, monsoon magic, night summits and glacier crossings — crafted for thrill seekers.</p>
+  
+</section>
+
+<section class="grid" id="specialGrid"></section>
+
+<section class="band snow">
+  <h2>Winter Camping Experience</h2>
+  <p>Build snow shelters, learn cold-weather survival and witness galaxies cut through the frigid sky.</p>
+  <canvas id="snow"></canvas>
+</section>
+<section class="band rain">
+  <h2>Monsoon Forest Trails</h2>
+  <p>Misty ridgelines, roaring waterfalls and neon-green valleys — rain gear provided.</p>
+  <canvas id="rain"></canvas>
+</section>
+<section class="band night">
+  <h2>Moonlit Summit Push</h2>
+  <p>Start at dusk, reach the peak at sunrise. Headlamps, hot cocoa, star maps.</p>
+  <canvas id="stars"></canvas>
+</section>
+<canvas id="leaves" style="position:fixed; top:0; left:0; width:100%; height:100%; pointer-events:none;"></canvas>
+
+<footer id="footer">© <span id="year"></span> MountRush — Special Treks</footer>
+
+<script>
+// Treks
+const specials = [
+  { name:"Arctic Snow Camp", type:"Winter", level:"Hard", nights:3, price:19999, cover:"mountain-8498328.jpg", tags:["Igloo Basics","Aurora Watch","-15°C"] },
+  { name:"Monsoon Waterfall Trail", type:"Monsoon", level:"Moderate", nights:2, price:12999, cover:"mountain-road-1648108.jpg", tags:["Rainforest","Stream Hops","Leech Socks"] },
+  { name:"Night Summit — Mystic Peak", type:"Night", level:"Moderate", nights:1, price:6999, cover:"nature-2586053.jpg", tags:["Headlamps","Star Trails","Sunrise Finish"] },
+  { name:"Glacier Traverse", type:"Glacier", level:"Extreme", nights:5, price:32999, cover:"denali-9635666.jpg", tags:["Crampons","Crevasse Rescue","Rope Skills"] },
+  { name:"Desert Moon Walk", type:"Desert", level:"Easy", nights:1, price:5999, cover:"aurora-borealis.jpg", tags:["Sand Dunes","Campfire Music"] },
+  { name:"Jungle Survival 101", type:"Jungle", level:"Hard", nights:3, price:14999, cover:"fisherman-1845156.jpg", tags:["Shelter","Foraging","Navigation"] }
+];
+const grid = document.getElementById('specialGrid');
+grid.innerHTML = specials.map(s=>`
+  <article class="card" data-name="${s.name}">
+    <div class="cover" style="background-image:url('${s.cover}')"></div>
+    <div class="content">
+      <h3>${s.name}</h3>
+      <div class="meta">${s.type} • ${s.level} • ${s.nights} night(s)</div>
+      <div class="tags">${s.tags.map(t=>`<span class="tag">${t}</span>`).join('')}</div>
+      <a class="btn" href="#">From ₹${s.price.toLocaleString('en-IN')}</a>
+    </div>
+  </article>
+`).join('');
+
+// Animations
+gsap.registerPlugin(ScrollTrigger);
+gsap.utils.toArray('.card').forEach(card=>{
+  gsap.to(card,{scrollTrigger:{trigger:card,start:"top 85%"},opacity:1,rotateY:0,duration:0.6});
+});
+ScrollTrigger.create({
+  trigger:'#footer', start:"top 90%",
+  onEnter:()=>document.getElementById('footer').classList.add('glow'),
+  onLeaveBack:()=>document.getElementById('footer').classList.remove('glow')
+});
+
+// Snow
+const snow = document.getElementById('snow'), snCtx=snow.getContext('2d');
+let flakes=[];
+function resize(){snow.width=snow.clientWidth; snow.height=snow.clientHeight;}
+window.addEventListener('resize',resize); resize();
+flakes=Array.from({length:100},()=>({x:Math.random()*snow.width,y:Math.random()*snow.height,r:Math.random()*2+1,s:Math.random()+0.5}));
+function drawSnow(){
+  snCtx.clearRect(0,0,snow.width,snow.height);
+  snCtx.fillStyle='white';
+  flakes.forEach(f=>{f.y+=f.s; f.x+=Math.sin(f.y*0.01)*0.5; if(f.y>snow.height){f.y=-5;f.x=Math.random()*snow.width;} snCtx.beginPath(); snCtx.arc(f.x,f.y,f.r,0,Math.PI*2); snCtx.fill();});
+  requestAnimationFrame(drawSnow);
+} drawSnow();
+
+// Rain
+const rain = document.getElementById('rain'), rnCtx=rain.getContext('2d');
+function resizeRain(){rain.width=rain.clientWidth; rain.height=rain.clientHeight;}
+window.addEventListener('resize',resizeRain); resizeRain();
+let drops=Array.from({length:100},()=>({x:Math.random()*rain.width,y:Math.random()*rain.height,l:Math.random()*20+10,s:Math.random()*3+2}));
+function drawRain(){
+  rnCtx.clearRect(0,0,rain.width,rain.height);
+  rnCtx.strokeStyle='rgba(200,220,255,0.5)';
+  drops.forEach(d=>{rnCtx.beginPath(); rnCtx.moveTo(d.x,d.y); rnCtx.lineTo(d.x+2,d.y+d.l); rnCtx.stroke(); d.y+=d.s; d.x+=1; if(d.y>rain.height){d.y=-10; d.x=Math.random()*rain.width;}});
+  requestAnimationFrame(drawRain);
+} drawRain();
+
+// Stars
+const stars = document.getElementById('stars'), stCtx=stars.getContext('2d');
+function resizeStars(){stars.width=stars.clientWidth; stars.height=stars.clientHeight;}
+window.addEventListener('resize',resizeStars); resizeStars();
+let pts=Array.from({length:150},()=>({x:Math.random()*stars.width,y:Math.random()*stars.height,r:Math.random()*1.2+0.3,t:Math.random()*2*Math.PI}));
+function drawStars(){
+  stCtx.clearRect(0,0,stars.width,stars.height);
+  pts.forEach(p=>{p.t+=0.02; stCtx.fillStyle=`rgba(255,255,255,${0.5+Math.sin(p.t)*0.5})`; stCtx.beginPath(); stCtx.arc(p.x,p.y,p.r,0,Math.PI*2); stCtx.fill();});
+  requestAnimationFrame(drawStars);
+} drawStars();
+
+// Leaves (only for Desert Moon Walk)
+const leavesCanvas=document.getElementById('leaves'), lvCtx=leavesCanvas.getContext('2d');
+function resizeLeaves(){leavesCanvas.width=window.innerWidth; leavesCanvas.height=window.innerHeight;}
+window.addEventListener('resize',resizeLeaves); resizeLeaves();
+let leaves=[], leafColors=["#DAA520","#D2691E","#CD853F","#B8860B","#FF8C00"].map(c=>shadeColor(c,Math.random()*20-10));
+function shadeColor(c,p){let num=parseInt(c.slice(1),16),amt=Math.round(2.55*p),R=(num>>16)+amt,G=(num>>8&0x00FF)+amt,B=(num&0x0000FF)+amt;return"#"+(0x1000000+(R<255?R<1?0:R:255)*0x10000+(G<255?G<1?0:G:255)*0x100+(B<255?B<1?0:B:255)).toString(16).slice(1);}
+function createLeaves(){leaves=Array.from({length:20},()=>({x:Math.random()*leavesCanvas.width,y:Math.random()*-leavesCanvas.height,s:Math.random()*20+20,sp:Math.random()*1+0.5,r:Math.random()*360,rc:(Math.random()-0.5)*2,c:leafColors[Math.floor(Math.random()*leafColors.length)]}));}
+function drawLeaves(){
+  lvCtx.clearRect(0,0,leavesCanvas.width,leavesCanvas.height);
+  leaves.forEach(l=>{lvCtx.save(); lvCtx.translate(l.x,l.y); lvCtx.rotate(l.r*Math.PI/180); lvCtx.fillStyle=l.c; lvCtx.beginPath(); lvCtx.ellipse(0,0,l.s*0.6,l.s,0,0,Math.PI*2); lvCtx.fill(); lvCtx.restore();
+    l.y+=l.sp; l.x+=Math.sin(l.y*0.02)*1.5; l.r+=l.rc; if(l.y>leavesCanvas.height+50){l.y=-20; l.x=Math.random()*leavesCanvas.width;}});
+  leafAnim=requestAnimationFrame(drawLeaves);
+}
+let leafAnim;
+ScrollTrigger.create({
+  trigger:".card[data-name='Desert Moon Walk']", start:"top 80%",
+  onEnter:()=>{createLeaves(); cancelAnimationFrame(leafAnim); drawLeaves();},
+  onLeave:()=>cancelAnimationFrame(leafAnim),
+  onLeaveBack:()=>cancelAnimationFrame(leafAnim)
+});
+
+document.getElementById('year').textContent=new Date().getFullYear();
+</script>
+</body>
+</html>

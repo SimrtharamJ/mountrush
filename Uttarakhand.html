@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MountRush • Uttarakhand Tourism</title>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;800&display=swap" rel="stylesheet">
+  <style>
+    :root{
+      --bg:#0a0f1c; --ink:#eaf6ff; --accent:#00ffaa; --accent2:#00a8ff; --card:#0f1629; --muted:#9fc6ff;
+      --glow: 0 0 15px rgba(0,168,255,.5), 0 0 35px rgba(0,255,170,.25);
+    }
+    *{box-sizing:border-box}
+    html,body{margin:0;font-family:Poppins,system-ui,Segoe UI,Roboto,Arial,sans-serif;background:var(--bg);color:var(--ink);scroll-behavior:smooth}
+    a{color:inherit;text-decoration:none}
+    img{max-width:100%;display:block}
+
+    /* ===== Sticky Smart Navbar ===== */
+    .nav{position:fixed;inset:0 0 auto 0;display:flex;align-items:center;gap:18px;padding:10px 22px;z-index:999;background:linear-gradient(180deg,rgba(10,15,28,.85),rgba(10,15,28,.35) 70%,transparent);backdrop-filter:blur(8px);transition:transform .4s ease}
+    .nav.compact{transform:translateY(-8px);background:rgba(10,15,28,.92)}
+    .brand{display:flex;align-items:center;gap:10px;font-weight:800;letter-spacing:.5px}
+    .brand-logo{width:38px;height:38px;background:radial-gradient(circle at 30% 30%,var(--accent),var(--accent2));border-radius:12px;box-shadow:var(--glow)}
+    .nav a{opacity:.9;font-weight:600}
+    .nav a:hover{color:var(--accent)}
+    .nav .spacer{flex:1}
+    .search{position:relative}
+    .search input{padding:10px 36px 10px 12px;border-radius:12px;border:1px solid #1f2b4d;background:#0c1325;color:var(--ink)}
+    .search .icon{position:absolute;right:10px;top:50%;transform:translateY(-50%);opacity:.7}
+    .cta{padding:10px 14px;border-radius:12px;background:linear-gradient(90deg,var(--accent),var(--accent2));color:#00263a;font-weight:800}
+
+    /* ===== Hero ===== */
+    .hero{position:relative;height:88vh;display:grid;place-items:center;overflow:hidden}
+    .hero .layer{position:absolute;inset:0;background-position:center;background-size:cover;will-change:transform}
+    .hero .back{background-image:url('https://images.unsplash.com/photo-1508264165352-258a6ec0b4ba?auto=format&fit=crop&w=1920&q=80');filter:brightness(.7) saturate(1.1)}
+    .hero .mid{background-image:url('https://images.unsplash.com/photo-1600353061744-134d29c004d0?auto=format&fit=crop&w=1920&q=80');mix-blend-mode:screen;opacity:.6}
+    .hero .front{background-image:url('https://images.unsplash.com/photo-1524492449090-1a1c4b3c5b18?auto=format&fit=crop&w=1920&q=80');opacity:.8}
+
+    /* Aurora */
+    .aurora{position:absolute;inset:0;background:
+      radial-gradient(60% 80% at 20% 90%, rgba(0,255,200,.25), transparent 70%),
+      radial-gradient(60% 80% at 80% 10%, rgba(0,168,255,.28), transparent 70%);
+      filter:blur(40px);animation:aurora 16s ease-in-out infinite alternate;z-index:3}
+    @keyframes aurora{from{transform:translateY(0)}to{transform:translateY(-40px)}}
+
+    /* Lightning + flash */
+    .flash{position:absolute;inset:0;background:white;opacity:0;pointer-events:none;z-index:6}
+
+    /* Floating silhouettes */
+    .floaty{position:absolute;bottom:10%;width:90px;opacity:.9;animation:drift 70s linear infinite}
+    .floaty:nth-child(odd){animation-duration:55s}
+    @keyframes drift{from{transform:translateX(-140px)}to{transform:translateX(120vw)}}
+
+    /* Hero copy */
+    .hero-inner{position:relative;z-index:7;text-align:center;padding:0 16px}
+    .headline{font-size:clamp(34px,5vw,64px);font-weight:800;text-shadow:0 6px 40px rgba(0,0,0,.6)}
+    .sub{opacity:.9;max-width:840px;margin:10px auto 20px}
+    .hero-actions{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
+    .btn{padding:12px 16px;border-radius:14px;border:1px solid #1f2b4d;background:#0c1325;color:var(--ink);font-weight:700}
+    .btn.primary{background:linear-gradient(90deg,var(--accent),var(--accent2));color:#00263a}
+
+    /* Alert ribbon */
+    .ticker{position:absolute;inset:auto 0 0 0;background:rgba(0,0,0,.35);backdrop-filter:blur(6px);border-top:1px solid #1f2b4d}
+    .marquee{white-space:nowrap;overflow:hidden}
+    .marquee span{display:inline-block;padding:10px 20px;animation:scroll 28s linear infinite}
+    @keyframes scroll{from{transform:translateX(0)}to{transform:translateX(-100%)}}
+
+    /* Sections */
+    section{padding:80px 6vw;max-width:1280px;margin:0 auto}
+    .section-title{font-size:clamp(26px,3.6vw,42px);text-align:center;margin-bottom:22px}
+    .muted{color:var(--muted)}
+
+    /* Pills nav (anchors) */
+    .pills{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin:14px 0 36px}
+    .pill{padding:8px 12px;border-radius:999px;background:#0c1325;border:1px solid #1f2b4d}
+
+    /* Card grid */
+    .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:16px}
+    .card{background:var(--card);border:1px solid #1f2b4d;border-radius:18px;overflow:hidden;box-shadow:var(--glow)}
+    .card .img{height:170px;background:#111;position:relative;overflow:hidden}
+    .card .img img{width:100%;height:100%;object-fit:cover;transform:scale(1.05);transition:transform .7s ease}
+    .card:hover .img img{transform:scale(1.12)}
+    .card .body{padding:14px}
+
+    /* Slider (pure CSS/JS) */
+    .slider{position:relative;overflow:hidden;border-radius:18px;border:1px solid #1f2b4d}
+    .slides{display:flex;transition:transform .6s ease}
+    .slide{min-width:100%;height:360px;background:#0c1325;position:relative}
+    .slide img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;filter:brightness(.82)}
+    .slider .navBtn{position:absolute;top:50%;transform:translateY(-50%);background:rgba(0,0,0,.45);border:1px solid #1f2b4d;padding:10px;border-radius:50%;cursor:pointer;z-index:3}
+    .slider .prev{left:10px}.slider .next{right:10px}
+    .dots{display:flex;gap:8px;justify-content:center;margin-top:10px}
+    .dot{width:10px;height:10px;border-radius:50%;background:#27406b}
+    .dot.active{background:linear-gradient(90deg,var(--accent),var(--accent2))}
+
+    /* Trip Planner */
+    .planner{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;background:linear-gradient(180deg,#0c1325,#0b1330);padding:16px;border-radius:16px;border:1px solid #1f2b4d}
+    .planner input,.planner select{padding:10px;border-radius:12px;border:1px solid #1f2b4d;background:#0a1428;color:var(--ink)}
+    .planner .go{grid-column:1/-1;justify-self:center}
+    #planOut{min-height:40px;margin-top:10px;color:var(--muted)}
+
+    /* Interactive district map (SVG) */
+    .map-wrap{display:grid;grid-template-columns:1.1fr 1fr;gap:22px;align-items:center}
+    svg{max-width:100%;height:auto}
+    .district:hover{filter:drop-shadow(0 0 10px rgba(0,255,170,.6))}
+
+    /* Snowflakes */
+    .snow{position:fixed;inset:0;pointer-events:none;z-index:999}
+    .flake{position:absolute;color:#fff;opacity:.95;animation:fall linear forwards}
+    @keyframes fall{to{transform:translateY(105vh) rotate(360deg);opacity:0}}
+
+    /* Thunder audio indicator */
+    .sound-toggle{position:fixed;right:16px;bottom:16px;display:flex;gap:8px;align-items:center;background:#0c1325;border:1px solid #1f2b4d;padding:10px 12px;border-radius:12px;z-index:998}
+
+    /* Back to top */
+    .toTop{position:fixed;right:18px;bottom:76px;background:linear-gradient(90deg,var(--accent),var(--accent2));color:#00263a;font-weight:900;padding:10px 12px;border-radius:12px;display:none}
+
+    /* Footer */
+    footer{padding:30px 6vw;border-top:1px solid #1f2b4d;background:#0a1022;color:#b7d7ff}
+    .foot-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:18px}
+
+    /* Reveal on scroll */
+    .reveal{opacity:0;transform:translateY(26px);transition:all .9s ease}
+    .reveal.show{opacity:1;transform:none}
+
+    /* Progress bar */
+    .progress{position:fixed;top:0;left:0;height:4px;background:linear-gradient(90deg,var(--accent),var(--accent2));width:0;z-index:1000}
+
+    /* Responsive tweaks */
+    @media (max-width:900px){.map-wrap{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+  <div class="progress" id="progress"></div>
+
+  <!-- ===== NAV ===== -->
+  <nav class="nav" id="nav">
+    <div class="brand"><div class="brand-logo"></div> MountRush • Uttarakhand</div>
+    <a href="#destinations">Destinations</a>
+    <a href="#experiences">Experiences</a>
+    <a href="#pilgrimage">Pilgrimage</a>
+    <a href="#planner">Plan</a>
+    <a href="#map">Map</a>
+    <span class="spacer"></span>
+    <div class="search"><input id="q" placeholder="Search places, treks, stays…"><span class="icon">🔍</span></div>
+    <a class="cta" href="#planner">Book Now</a>
+  </nav>
+
+  <!-- ===== HERO ===== -->
+  <header class="hero" id="home">
+    <div class="layer back hero back"></div>
+    <div class="layer hero mid"></div>
+    <div class="layer hero front"></div>
+    <div class="aurora"></div>
+    <img src="https://cdn-icons-png.flaticon.com/512/616/616408.png" class="floaty" style="left:-120px" alt="balloon"/>
+    <img src="https://cdn-icons-png.flaticon.com/512/616/616494.png" class="floaty" style="animation-delay:22s;width:78px;bottom:28%" alt="eagle"/>
+    <div class="hero-inner">
+      <h1 class="headline">Discover Uttarakhand</h1>
+      <p class="sub">Himalayan peaks, sacred rivers, alpine meadows, yoga retreats, wildlife, skiing & more — plan immersive journeys with live effects, snowfall, thunder and dynamic trip tools.</p>
+      <div class="hero-actions">
+        <a class="btn primary" href="#destinations">Explore Destinations</a>
+        <a class="btn" href="#planner">Build My Trip</a>
+      </div>
+    </div>
+    <div class="flash" id="flash"></div>
+    <div class="ticker"><div class="marquee"><span>⚠️ Permit note: Certain border areas (Nelong, Niti, Mana, etc.) require permits. Check latest advisories before travel. • Weather varies quickly in high Himalaya — pack layers and rain cover. • Kedarnath & Badrinath opening/closing dates vary each year.</span></div></div>
+  </header>
+
+  <!-- ===== DESTINATIONS ===== -->
+  <section id="destinations" class="reveal">
+    <h2 class="section-title">Top Destinations</h2>
+    <div class="pills">
+      <a class="pill" href="#auli">Auli (Ski)</a>
+      <a class="pill" href="#nainital">Nainital (Lake City)</a>
+      <a class="pill" href="#rishikesh">Rishikesh (Yoga)</a>
+      <a class="pill" href="#corbett">Jim Corbett (Wildlife)</a>
+      <a class="pill" href="#valley">Valley of Flowers</a>
+    </div>
+
+    <!-- Slider showcase -->
+    <div class="slider" id="heroSlider">
+      <div class="slides">
+        <div class="slide"><img src="https://images.unsplash.com/photo-1514282162147-1b24f28e2f2e?auto=format&fit=crop&w=1600&q=70" alt="Auli slopes"><div class="hero-inner" style="position:absolute;bottom:22px;left:22px"><h3>Auli • Ski & Snow</h3></div></div>
+        <div class="slide"><img src="https://images.unsplash.com/photo-1603262110263-fb0112e7cc33?auto=format&fit=crop&w=1600&q=70" alt="Nainital"><div class="hero-inner" style="position:absolute;bottom:22px;left:22px"><h3>Nainital • Lakes & Cafés</h3></div></div>
+        <div class="slide"><img src="https://images.unsplash.com/photo-1548013146-72479768bada?auto=format&fit=crop&w=1600&q=70" alt="Rishikesh"><div class="hero-inner" style="position:absolute;bottom:22px;left:22px"><h3>Rishikesh • Yoga & Rafting</h3></div></div>
+      </div>
+      <button class="navBtn prev" aria-label="Previous">◀</button>
+      <button class="navBtn next" aria-label="Next">▶</button>
+      <div class="dots"></div>
+    </div>
+
+    <div class="grid" style="margin-top:18px">
+      <article id="auli" class="card">
+        <div class="img"><img src="https://images.unsplash.com/photo-1515934751635-c81c6bc9a2db?auto=format&fit=crop&w=1200&q=70" alt="Auli"/></div>
+        <div class="body"><h3>Auli</h3><p>Snow meadows & ski slopes facing Nanda Devi. ❄️ Snowfall mode supported — click the snowflake below.</p>
+          <button class="btn" onclick="toggleSnow(true)">❄️ Start Snow</button>
+          <button class="btn" onclick="toggleSnow(false)">✖ Stop Snow</button>
+        </div>
+      </article>
+      <article id="nainital" class="card">
+        <div class="img"><img src="https://images.unsplash.com/photo-1603262110263-fb0112e7cc33?auto=format&fit=crop&w=1200&q=70" alt="Nainital"/></div>
+        <div class="body"><h3>Nainital</h3><p>Emerald Naini Lake ringed by cozy cafés & snow peaks. Activate lake-town snowfall for winter vibes.</p>
+          <button class="btn" onclick="toggleSnow(true)">❄️ Snowfall</button>
+        </div>
+      </article>
+      <article id="rishikesh" class="card">
+        <div class="img"><img src="https://images.unsplash.com/photo-1548013146-72479768bada?auto=format&fit=crop&w=1200&q=70" alt="Rishikesh"/></div>
+        <div class="body"><h3>Rishikesh</h3><p>Yoga capital by the Ganga — ashrams, rafting, cliff jumps & cafés beneath Shivaliks.</p></div>
+      </article>
+      <article id="corbett" class="card">
+        <div class="img"><img src="https://images.unsplash.com/photo-1516387938699-a93567ec168e?auto=format&fit=crop&w=1200&q=70" alt="Corbett"/></div>
+        <div class="body"><h3>Jim Corbett NP</h3><p>Sal forests, rivers and grasslands — chance encounters with tigers, elephants and hundreds of bird species.</p></div>
+      </article>
+    </div>
+  </section>
+
+  <!-- ===== EXPERIENCES ===== -->
+  <section id="experiences" class="reveal">
+    <h2 class="section-title">Signature Experiences</h2>
+    <div class="grid">
+      <div class="card"><div class="img"><img src="https://images.unsplash.com/photo-1526318472351-c75fcf070305?auto=format&fit=crop&w=1200&q=70" alt="Trekking"/></div><div class="body"><h3>Trekking & Meadows</h3><p>Gorson Bugyal, Dayara, Kuari Pass & Har Ki Dun — rolling meadows and panoramic 6000ers.</p></div></div>
+      <div class="card"><div class="img"><img src="https://images.unsplash.com/photo-1493815793585-6f3d9f40f6f0?auto=format&fit=crop&w=1200&q=70" alt="Pilgrimage"/></div><div class="body"><h3>Char Dham Yatra</h3><p>Yamunotri, Gangotri, Kedarnath & Badrinath — spiritual arc across high valleys.</p></div></div>
+      <div class="card"><div class="img"><img src="https://images.unsplash.com/photo-1519681393784-d120267933ba?auto=format&fit=crop&w=1200&q=70" alt="Camping"/></div><div class="body"><h3>Camping & Stargazing</h3><p>Crystal night skies — pitch by alpine lakes or pine forests; watch Milky Way bloom.</p></div></div>
+      <div class="card"><div class="img"><img src="https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=1200&q=70" alt="Adventure"/></div><div class="body"><h3>Rafting & Bungee</h3><p>White-water thrills in Rishikesh; zip-lines and bungee on rugged cliffs.</p></div></div>
+    </div>
+  </section>
+
+  <!-- ===== PILGRIMAGE ===== -->
+  <section id="pilgrimage" class="reveal">
+    <h2 class="section-title">Pilgrimage & Culture</h2>
+    <p class="muted" style="text-align:center;max-width:900px;margin:0 auto 18px">Ancient routes along the Ganga & Alaknanda valleys. Fairs like Kumbh, Nanda Devi Raj Jat and countless local jatras keep Himalayan culture vibrant.</p>
+    <div class="grid">
+      <div class="card"><div class="img"><img src="https://images.unsplash.com/photo-1589308078051-1449bba14f15?auto=format&fit=crop&w=1200&q=70" alt="Haridwar"/></div><div class="body"><h3>Har Ki Pauri • Haridwar</h3><p>Ganga Aarti flames reflect across the river — a nightly ritual.</p></div></div>
+      <div class="card"><div class="img"><img src="https://images.unsplash.com/photo-1578926374377-39b3a10a92b6?auto=format&fit=crop&w=1200&q=70" alt="Kedarnath"/></div><div class="body"><h3>Kedarnath</h3><p>Iconic stone temple under Kedarnath peak; trek or helicopter as per season.</p></div></div>
+      <div class="card"><div class="img"><img src="https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=1200&q=70" alt="Badrinath"/></div><div class="body"><h3>Badrinath</h3><p>Vishnu shrine along the Alaknanda; hot springs nearby.</p></div></div>
+      <div class="card"><div class="img"><img src="https://images.unsplash.com/photo-1477764865293-6b9a815b8a36?auto=format&fit=crop&w=1200&q=70" alt="Culture"/></div><div class="body"><h3>Local Fairs</h3><p>Pahadi music, woodcraft, woolens and village feasts.</p></div></div>
+    </div>
+  </section>
+
+  <!-- ===== TRIP PLANNER ===== -->
+  <section id="planner" class="reveal">
+    <h2 class="section-title">Plan Your Trip</h2>
+    <div class="planner">
+      <input type="date" id="date">
+      <select id="dest">
+        <option>Auli</option>
+        <option>Nainital</option>
+        <option>Rishikesh</option>
+        <option>Jim Corbett</option>
+        <option>Valley of Flowers</option>
+      </select>
+      <select id="days">
+        <option value="2">2 days</option>
+        <option value="3" selected>3 days</option>
+        <option value="5">5 days</option>
+        <option value="7">7 days</option>
+      </select>
+      <input type="number" id="budget" placeholder="Budget (₹)" />
+      <button class="btn primary go" onclick="recommend()">Get Instant Itinerary ⚡</button>
+      <div id="planOut"></div>
+    </div>
+  </section>
+
+  <!-- ===== MAP & DISTRICTS ===== -->
+  <section id="map" class="reveal">
+    <h2 class="section-title">Interactive Map & Districts</h2>
+    <div class="map-wrap">
+      <div>
+        <svg viewBox="0 0 640 520" fill="#193057" stroke="#2a3f6c" stroke-width="2" aria-label="Uttarakhand map">
+          <title>Uttarakhand districts (schematic)</title>
+          <g class="ut-map">
+            <path class="district" data-name="Dehradun" d="M120,340 L220,320 240,360 210,400 140,390 z"/>
+            <path class="district" data-name="Haridwar" d="M220,410 L280,390 300,430 260,470 210,450 z"/>
+            <path class="district" data-name="Nainital" d="M360,380 L430,360 460,400 420,440 350,420 z"/>
+            <path class="district" data-name="Chamoli" d="M300,260 L380,240 420,280 360,320 290,300 z"/>
+            <path class="district" data-name="Uttarkashi" d="M200,220 L280,190 320,220 260,260 190,250 z"/>
+          </g>
+        </svg>
+      </div>
+      <div>
+        <h3 id="dTitle">Hover districts</h3>
+        <p id="dInfo" class="muted">Move your cursor on the schematic map to preview highlights. Click a hill district (Auli/Nainital) to trigger ❄ snowfall & subtle wind ambience.</p>
+        <div style="display:flex;gap:10px;margin-top:8px">
+          <button class="btn" onclick="toggleSnow(true)">❄ Start Snow</button>
+          <button class="btn" onclick="toggleSnow(false)">✖ Stop</button>
+          <button class="btn" id="thunderBtn">🌩 Thunder</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== FESTIVALS ===== -->
+  <section id="festivals" class="reveal">
+    <h2 class="section-title">Festivals & Events</h2>
+    <div class="grid">
+      <div class="card"><div class="img"><img src="https://images.unsplash.com/photo-1546706887-4272a78dc4f5?auto=format&fit=crop&w=1200&q=70" alt="Kumbh"/></div><div class="body"><h3>Kumbh / Ardh Kumbh</h3><p>Haridwar’s iconic gathering on the Ganga. Crowd management advisories apply.</p></div></div>
+      <div class="card"><div class="img"><img src="https://images.unsplash.com/photo-1500534314209-a25ddb2bd429?auto=format&fit=crop&w=1200&q=70" alt="Raj Jat"/></div><div class="body"><h3>Nanda Devi Raj Jat</h3><p>Epic high-altitude pilgrimage across meadows and ridges (once in 12 years).</p></div></div>
+      <div class="card"><div class="img"><img src="https://images.unsplash.com/photo-1548013146-72479768bada?auto=format&fit=crop&w=1200&q=70" alt="Yoga"/></div><div class="body"><h3>International Yoga Week</h3><p>Rishikesh transforms into a global yoga hub each March.</p></div></div>
+    </div>
+  </section>
+
+  <footer>
+    <div class="foot-grid">
+      <div><h4>MountRush • Uttarakhand</h4><p class="muted">Immersive planning with weather-like visuals. This single-file demo uses no frameworks.</p></div>
+      <div>
+        <h4>Useful</h4>
+        <p><a href="#planner">Trip Planner</a><br><a href="#map">Map</a><br><a href="#pilgrimage">Pilgrimage</a></p>
+      </div>
+      <div>
+        <h4>Safety</h4>
+        <p class="muted">Always check route, permits and forecasts. Carry layers, rain protection and ID for checkpoints.</p>
+      </div>
+    </div>
+    <p style="margin-top:14px" class="muted">© 2025 MountRush</p>
+  </footer>
+
+  <!-- Snow layer & Controls -->
+  <div class="snow" id="snow"></div>
+  <div class="sound-toggle"><label><input type="checkbox" id="windToggle"> Wind ambience</label></div>
+  <a href="#home" class="toTop" id="toTop">↑ Top</a>
+
+  <!-- Audio -->
+  <audio id="thunder" src="https://www.soundjay.com/nature/thunder-1.mp3" preload="auto"></audio>
+  <audio id="wind" src="https://www.soundjay.com/nature/wind-blowing-2.mp3" preload="auto" loop></audio>
+
+  <script>
+    // ===== Progress bar & compact nav =====
+    const progress = document.getElementById('progress');
+    const nav = document.getElementById('nav');
+    window.addEventListener('scroll', () => {
+      const h = document.documentElement.scrollHeight - innerHeight;
+      progress.style.width = (scrollY / h * 100) + '%';
+      nav.classList.toggle('compact', scrollY > 40);
+      document.getElementById('toTop').style.display = scrollY > 600 ? 'inline-block' : 'none';
+    });
+
+    // ===== Hero parallax (mouse) =====
+    document.addEventListener('mousemove', (e)=>{
+      const x=(e.clientX/innerWidth - .5)*20; const y=(e.clientY/innerHeight - .5)*20;
+      document.querySelector('.back').style.transform = `translate(${x/4}px, ${y/4}px)`;
+      document.querySelector('.mid').style.transform = `translate(${x/2}px, ${y/2}px)`;
+      document.querySelector('.front').style.transform = `translate(${x}px, ${y}px)`;
+    });
+
+    // ===== Random lightning + thunder =====
+    const flash = document.getElementById('flash');
+    function strike(){
+      flash.style.opacity=1; document.getElementById('thunder').currentTime=0; document.getElementById('thunder').play();
+      setTimeout(()=> flash.style.opacity=0, 180);
+    }
+    setInterval(()=>{ if(Math.random()>.78) strike(); }, 5500);
+    document.getElementById('thunderBtn').addEventListener('click', strike);
+
+    // ===== Reveal on scroll =====
+    const reveals=[...document.querySelectorAll('.reveal')];
+    const io = new IntersectionObserver((entries)=>{
+      entries.forEach(e=>{ if(e.isIntersecting) e.target.classList.add('show'); });
+    }, {threshold:.15});
+    reveals.forEach(r=>io.observe(r));
+
+    // ===== Slider =====
+    const slider = document.getElementById('heroSlider');
+    const slides = slider.querySelector('.slides');
+    const items = [...slider.querySelectorAll('.slide')];
+    const dotsWrap = slider.querySelector('.dots');
+    let index = 0;
+    items.forEach((_,i)=>{const d=document.createElement('div');d.className='dot'+(i===0?' active':'');d.onclick=()=>go(i);dotsWrap.appendChild(d)});
+    function go(i){ index=i<0?items.length-1:i%items.length; slides.style.transform = `translateX(-${index*100}%)`; dotsWrap.querySelectorAll('.dot').forEach((d,j)=>d.classList.toggle('active',j===index)); }
+    slider.querySelector('.prev').onclick=()=>go(index-1); slider.querySelector('.next').onclick=()=>go(index+1);
+    setInterval(()=>go(index+1), 6000);
+
+    // ===== Planner recommendations (instant) =====
+    function recommend(){
+      const date = document.getElementById('date').value || 'soon';
+      const dest = document.getElementById('dest').value;
+      const days = +document.getElementById('days').value;
+      const budget = +document.getElementById('budget').value || 15000;
+      const out = document.getElementById('planOut');
+      const picks = {
+        'Auli': ['Ski lessons • Chairlift','Gorson Bugyal trek','Joshimath cafés'],
+        'Nainital': ['Naini Lake boating','Snow View point','Café crawl at Mall Road'],
+        'Rishikesh': ['Morning Ganga Aarti','Grade II/III rafting','Sunset at Laxman Jhula'],
+        'Jim Corbett': ['Morning safari • Bijrani','River walk','Birding hide'] ,
+        'Valley of Flowers': ['Permit & early start','Hemkund Sahib altitude acclimatization','Flower meadows photography']
+      };
+      const stayTier = budget/days < 2500 ? 'Budget homestays & dorms' : budget/days < 6000 ? 'Comfort hotels & cottages' : 'Boutique resorts / premium stays';
+      const rec = picks[dest] || [];
+      const text = `📅 ${date} • ${dest} • ${days}D\nStay: ${stayTier}\nPlan: • ${rec.join(' • ')}\nTip: Buffer a weather day in the Himalaya.`;
+      typeOut(out, text);
+    }
+    function typeOut(node, text){ node.innerHTML=''; let i=0; const timer=setInterval(()=>{ node.innerHTML += text[i]||''; i++; if(i>text.length) clearInterval(timer); }, 12); }
+
+    // ===== Interactive map tooltips + snow trigger on click =====
+    const info = {
+      'Dehradun':'Capital city • Sahastradhara, Robber’s Cave, Forest Research Institute.',
+      'Haridwar':'Gateway to Gods • Ganga Aarti at Har Ki Pauri, Kumbh.',
+      'Nainital':'Lake district • Naini Lake, Snow View (❄ snow mode).',
+      'Chamoli':'Gateway to Auli & Valley of Flowers (❄ snow mode).',
+      'Uttarkashi':'Gangotri region • Dodital, Dayara Bugyal.'
+    };
+    document.querySelectorAll('.district').forEach(p=>{
+      p.addEventListener('mousemove',()=>{ document.getElementById('dTitle').textContent = p.dataset.name; document.getElementById('dInfo').textContent = info[p.dataset.name] || ''; });
+      p.addEventListener('click',()=>{ if(['Nainital','Chamoli'].includes(p.dataset.name)) toggleSnow(true); });
+    });
+
+    // ===== Snowfall engine =====
+    let snowTimer; const snowLayer = document.getElementById('snow');
+    function toggleSnow(on){
+      if(on){
+        clearInterval(snowTimer); snowLayer.innerHTML='';
+        snowTimer = setInterval(()=>{
+          const f=document.createElement('div'); f.className='flake'; f.textContent = Math.random()>.5 ? '❄' : '✦';
+          f.style.left = Math.random()*innerWidth + 'px';
+          f.style.top = '-20px';
+          f.style.fontSize = (Math.random()*18 + 12) + 'px';
+          f.style.animationDuration = (Math.random()*6 + 6) + 's';
+          snowLayer.appendChild(f); setTimeout(()=>f.remove(), 12000);
+        }, 160);
+        if(document.getElementById('windToggle').checked){ wind.play(); }
+      } else { clearInterval(snowTimer); snowLayer.innerHTML=''; wind.pause(); }
+    }
+    document.getElementById('windToggle').addEventListener('change', (e)=>{ if(e.target.checked){ wind.play(); } else { wind.pause(); }});
+
+    // ===== Back-to-top smooth show handled above =====
+
+  </script>
+</body>
+</html>
